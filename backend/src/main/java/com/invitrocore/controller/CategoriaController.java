@@ -6,6 +6,7 @@ import com.invitrocore.service.CategoriaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class CategoriaController {
    /* POST /api/categorias */
 
    @PostMapping
+   @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
    public ResponseEntity<CategoriaResponseDTO> crear(
          @Valid @RequestBody CategoriaRequestDTO dto) {
 
@@ -32,6 +34,7 @@ public class CategoriaController {
    /* GET /api/categorias */
 
    @GetMapping
+   @PreAuthorize("isAuthenticated()")
    public ResponseEntity<List<CategoriaResponseDTO>> listar() {
       return ResponseEntity.ok(categoriaService.listar());
    }
@@ -39,6 +42,7 @@ public class CategoriaController {
    /* GET /api/categorias/{id} */
 
    @GetMapping("/{id}")
+   @PreAuthorize("isAuthenticated")
    public ResponseEntity<CategoriaResponseDTO> obtenerPorId(@PathVariable Long id) {
       return ResponseEntity.ok(categoriaService.obtenerPorId(id));
    }
@@ -46,6 +50,7 @@ public class CategoriaController {
    /* PUT /api/categorias/{id} */
 
    @PutMapping("/{id}")
+   @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
    public ResponseEntity<CategoriaResponseDTO> actualizar(
          @PathVariable Long id,
          @Valid @RequestBody CategoriaRequestDTO dto) {
@@ -56,6 +61,7 @@ public class CategoriaController {
    /* DELETE /api/categorias/{id} */
 
    @DeleteMapping("/{id}")
+   @PreAuthorize("hasAnyRole('ADMIN')")
    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
       categoriaService.eliminar(id);
       return ResponseEntity.noContent().build();

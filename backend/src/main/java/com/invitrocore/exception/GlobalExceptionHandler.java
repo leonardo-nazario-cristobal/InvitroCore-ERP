@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.access.AccessDeniedException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -46,6 +47,14 @@ public class GlobalExceptionHandler {
 				HttpStatus.UNAUTHORIZED.value());
 
 		return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ApiError> handlerAccessDenied(AccessDeniedException ex) {
+		ApiError error = new ApiError(
+				"No Tienes Permisos Para Esta Acción",
+				HttpStatus.FORBIDDEN.value());
+		return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
 	}
 
 	/* Validaciones */

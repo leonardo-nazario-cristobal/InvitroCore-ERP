@@ -7,6 +7,7 @@ import com.invitrocore.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class UsuarioController {
    /* POST /api/usuarios */
 
    @PostMapping
+   @PreAuthorize("hasRole('ADMIN')")
    public ResponseEntity<UsuarioResponseDTO> crearUsuario(
          @Valid @RequestBody UsuarioRequestDTO dto) {
 
@@ -34,6 +36,7 @@ public class UsuarioController {
    /* GET /api/usuarios */
 
    @GetMapping
+   @PreAuthorize("hasRole('ADMIN')")
    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
       return ResponseEntity.ok(usuarioService.listarUsuarios());
    }
@@ -41,6 +44,7 @@ public class UsuarioController {
    /* GET /api/usuarios/{id} */
 
    @GetMapping("/{id}")
+   @PreAuthorize("hasRole('ADMIN')")
    public ResponseEntity<UsuarioResponseDTO> obtenerPorId(@PathVariable Long id) {
       return ResponseEntity.ok(usuarioService.obtenerPorId(id));
    }
@@ -48,6 +52,7 @@ public class UsuarioController {
    /* PUT /api/usuarios/{id} */
 
    @PutMapping("/{id}")
+   @PreAuthorize("hasRole('ADMIN')")
    public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(
          @PathVariable Long id,
          @Valid @RequestBody UsuarioRequestDTO dto) {
@@ -58,6 +63,7 @@ public class UsuarioController {
    /* PATCH /api/usuarios/{id}/desactivar */
 
    @PatchMapping("/{id}/desactivar")
+   @PreAuthorize("hasRole('ADMIN')")
    public ResponseEntity<Void> desactivarUsuario(@PathVariable Long id) {
       usuarioService.desactivarUsuario(id);
       return ResponseEntity.noContent().build();
@@ -66,6 +72,7 @@ public class UsuarioController {
    /* PATCH /api/usuarios/{id}/activar */
 
    @PatchMapping("/{id}/activar")
+   @PreAuthorize("hasRole('ADMIN')")
    public ResponseEntity<Void> activarUsuario(@PathVariable Long id) {
       usuarioService.activarUsuario(id);
       return ResponseEntity.noContent().build();
@@ -74,6 +81,7 @@ public class UsuarioController {
    /* PATCH /api/usuarios/{id}/rol */
 
    @PatchMapping("/{id}/rol")
+   @PreAuthorize("hasRole('ADMIN')")
    public ResponseEntity<Void> cambiarRol(
          @PathVariable Long id,
          @RequestParam TipoRol nuevoRol) {
