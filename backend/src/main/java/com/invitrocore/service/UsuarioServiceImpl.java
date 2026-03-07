@@ -32,7 +32,7 @@ public class UsuarioServiceImpl implements UsuarioService {
    public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO dto) {
 
       if (usuarioRepository.existsByCorreo(dto.getCorreo())) {
-         throw new BadRequestException("El Correo Ya Está Registrado");
+         throw new BadRequestException("El correo ya está registrado");
       }
 
       /* El rol es opcional en DTO si no viene se asigna Cajero */
@@ -76,7 +76,7 @@ public class UsuarioServiceImpl implements UsuarioService {
       if (!usuario.getCorreo().equals(dto.getCorreo()) &&
             usuarioRepository.existsByCorreo(dto.getCorreo())) {
 
-         throw new BadRequestException("El Correo Ya Está En Uso");
+         throw new BadRequestException("El correo ya Está en uso");
       }
 
       usuario.actualizarNombre(dto.getNombre());
@@ -128,7 +128,7 @@ public class UsuarioServiceImpl implements UsuarioService {
    private Usuario buscarPorIdOFallar(Long id) {
       return usuarioRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException(
-                  "Usuario No Encontrado Con Id: " + id));
+                  "Usuario no encontrado con id: " + id));
    }
 
    private UsuarioResponseDTO toDTO(Usuario u) {

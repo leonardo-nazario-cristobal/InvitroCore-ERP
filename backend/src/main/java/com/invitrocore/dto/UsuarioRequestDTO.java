@@ -7,17 +7,17 @@ import jakarta.validation.constraints.Size;
 
 public class UsuarioRequestDTO {
 
-   @NotBlank(message = "El Nombre Es Obligatorio")
-   @Size(max = 100, message = "El Nombre No Puede Superar 100 Caracteres")
+   @NotBlank(message = "El nombre es obligatorio")
+   @Size(max = 100, message = "El nombre no puede superar 100 caracteres")
    private String nombre;
 
-   @NotBlank(message = "El Correo Es Obligatorio")
-   @Email(message = "El Correo No Tiene Un Formato Valido")
-   @Size(max = 120, message = "El Correo No Puede Superar 120 Caracteres")
+   @NotBlank(message = "El correo es obligatorio")
+   @Email(message = "El correo no tiene un formato válido")
+   @Size(max = 120, message = "El correo no puede superar 120 caracteres")
    private String correo;
 
-   @NotBlank(message = "La Contraseña Es Obligatoria")
-   @Size(min = 8, message = "La Contraseña Debe Tener Al Menos 8 Caracteres")
+   @NotBlank(message = "La contraseña es obligatoria")
+   @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
    private String password;
 
    /* Si no viene el servicio pone Cajero por defecto */

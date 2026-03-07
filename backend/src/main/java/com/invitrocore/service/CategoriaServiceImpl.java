@@ -27,7 +27,7 @@ public class CategoriaServiceImpl implements CategoriaService {
    public CategoriaResponseDTO crear(CategoriaRequestDTO dto) {
 
       if (categoriaRepository.existsByNombre(dto.getNombre())) {
-         throw new BadRequestException("Ya Existe Una Categoria Con Ese Nombre");
+         throw new BadRequestException("Ya existe una categoria con ese nombre");
       }
 
       Categoria categoria = new Categoria(dto.getNombre(), dto.getDescripcion());
@@ -59,7 +59,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
       if (!categoria.getNombre().equalsIgnoreCase(dto.getNombre()) &&
             categoriaRepository.existsByNombre(dto.getNombre())) {
-         throw new BadRequestException("Ya Existe Una Categoria Con Ese Nombre");
+         throw new BadRequestException("Ya existe una categoria con ese nombre");
       }
 
       categoria.actualizarNombre(dto.getNombre());
@@ -74,7 +74,7 @@ public class CategoriaServiceImpl implements CategoriaService {
    @Transactional
    public void eliminar(Long id) {
       if (!categoriaRepository.existsById(id)) {
-         throw new ResourceNotFoundException("Categoria No Encontrada Con Id: " + id);
+         throw new ResourceNotFoundException("Categoria no encontrada con id: " + id);
       }
       categoriaRepository.deleteById(id);
    }
@@ -84,7 +84,7 @@ public class CategoriaServiceImpl implements CategoriaService {
    private Categoria buscarPorIdOFallar(Long id) {
       return categoriaRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException(
-                  "Categoria No Encontada Con Id: " + id));
+                  "Categoria no encontada con id: " + id));
    }
 
    private CategoriaResponseDTO toDTO(Categoria c) {

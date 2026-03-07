@@ -95,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
       String refreshToken = dto.getRefreshToken();
 
       if (!refreshTokensValidos.contains(refreshToken)) {
-         throw new BadRequestException("Refresh Token Inválido O Expirado");
+         throw new BadRequestException("Refresh token inválido o expirado");
       }
 
       String correo = jwtService.extraerCorreo(refreshToken);
@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
 
       if (!jwtService.esValido(refreshToken, userDetails)) {
          refreshTokensValidos.remove(refreshToken);
-         throw new BadRequestException("Refresh Token Inválido O Expirado");
+         throw new BadRequestException("Refresh token inválido o expirado");
       }
 
       refreshTokensValidos.remove(refreshToken);

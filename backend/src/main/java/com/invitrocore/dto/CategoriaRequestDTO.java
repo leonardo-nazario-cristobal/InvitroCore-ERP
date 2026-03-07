@@ -5,11 +5,11 @@ import jakarta.validation.constraints.Size;
 
 public class CategoriaRequestDTO {
 
-   @NotBlank(message = "El Nombre Es Obligatorio")
-   @Size(max = 100, message = "El Nombre No Puede Superar 100 Caracteres")
+   @NotBlank(message = "El nombre es obligatorio")
+   @Size(max = 100, message = "El nombre no puede superar 100 caracteres")
    private String nombre;
 
-   @Size(max = 500, message = "La Desscripción No Puede Superar Los 500 Caracteres")
+   @Size(max = 500, message = "La desscripción no puede superar los 500 caracteres")
    private String descripcion;
 
    public String getNombre() {

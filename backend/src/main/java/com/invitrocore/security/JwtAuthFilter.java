@@ -51,19 +51,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
       final String token = authHeader.substring(7);
 
-      /* Extraer el correo del token */
+      try {
+         final String correo = jwtService.extraerCorreo(token);
 
-      final String correo = jwtService.extraerCorreo(token);
-
-      /* Si hay correo y el usuario no esta autenticado en este request */
-
-      if (correo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-         try {
+         if (correo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(correo);
 
             if (jwtService.esValido(token, userDetails)) {
-
                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                      userDetails,
                      null,
@@ -71,14 +65,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                authToken.setDetails(
                      new WebAuthenticationDetailsSource().buildDetails(request));
                SecurityContextHolder.getContext().setAuthentication(authToken);
-            } else {
-               log.warn("Token NO válido para: {}", correo);
             }
-         } catch (Exception e) {
-            log.warn("Error procesando token: {}", e.getMessage());
          }
-
-         filterChain.doFilter(request, response);
+      } catch (Exception e) {
+         // Token expirado, malformado o inválido → Spring devuelve 401 automáticamente
+         log.warn("Error procesando token: {}", e.getMessage());
       }
+
+      filterChain.doFilter(request, response);
    }
 }

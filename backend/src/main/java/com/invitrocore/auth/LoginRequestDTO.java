@@ -5,11 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequestDTO {
 
-   @NotBlank(message = "El Correo Es Obligatorio")
-   @Email(message = "El Correo No Tiene Un Formato Válido")
+   @NotBlank(message = "El correo es obligatorio")
+   @Email(message = "El correo no tiene un formato válido")
    private String correo;
 
-   @NotBlank(message = "La Contraseña Es Obligatoria")
+   @NotBlank(message = "La contraseña es obligatoria")
    private String password;
 
    public String getCorreo() {

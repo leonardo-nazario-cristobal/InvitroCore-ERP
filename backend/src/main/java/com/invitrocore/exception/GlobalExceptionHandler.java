@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ApiError> handleBadCredentials(BadCredentialsException ex) {
 
 		ApiError error = new ApiError(
-				"Correo O Contraseña Incorrectos",
+				"Correo o contraseña incorrectos",
 				HttpStatus.UNAUTHORIZED.value());
 
 		return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ApiError> handlerAccessDenied(AccessDeniedException ex) {
 		ApiError error = new ApiError(
-				"No Tienes Permisos Para Esta Acción",
+				"No tienes permisos para esta acción",
 				HttpStatus.FORBIDDEN.value());
 		return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
 	}
