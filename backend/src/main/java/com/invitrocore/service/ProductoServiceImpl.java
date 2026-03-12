@@ -116,16 +116,21 @@ public class ProductoServiceImpl implements ProductoService {
          throw new BadRequestException("Ya existe un producto con ese nombre");
       }
 
-      if (dto.getCodigoBarras() != null &&
-            !dto.getCodigoBarras().equals(producto.getCodigoBarras()) &&
-            productoRepository.existsByCodigoBarras(dto.getCodigoBarras())) {
-         throw new BadRequestException("Ya existe un producto con ese código de barras");
-      }
-
       producto.actualizarNombre(dto.getNombre());
       producto.actualizarDescripcion(dto.getDescripcion());
       producto.actualizarPrecio(dto.getPrecio());
-      producto.actualizarCodigoBarras(dto.getCodigoBarras());
+
+      if (dto.getCodigoBarras() != null && !dto.getCodigoBarras().isBlank()) {
+         if (!dto.getCodigoBarras().equals(producto.getCodigoBarras()) &&
+               productoRepository.existsByCodigoBarras(dto.getCodigoBarras())) {
+            throw new BadRequestException("Ya existe un producto con ese código de barras");
+         }
+         producto.actualizarCodigoBarras(dto.getCodigoBarras());
+      }
+
+      if (producto.getCodigoBarras() == null) {
+         producto.actualizarCodigoBarras(generarCodigoBarras());
+      }
 
       if (dto.getStockMinimo() != null) {
          producto.actualizarStockMinimo(dto.getStockMinimo());
