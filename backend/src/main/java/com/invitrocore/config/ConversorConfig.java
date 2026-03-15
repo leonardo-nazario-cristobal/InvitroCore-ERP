@@ -2,6 +2,7 @@ package com.invitrocore.config;
 
 import com.invitrocore.model.EstadoVenta;
 import com.invitrocore.model.MetodoPago;
+import com.invitrocore.model.TipoMovimiento;
 import com.invitrocore.model.TipoRol;
 
 import org.springframework.context.annotation.Configuration;
@@ -22,5 +23,8 @@ public class ConversorConfig implements WebMvcConfigurer {
 
       registry.addConverter(String.class, TipoRol.class,
             valor -> TipoRol.fromValor(valor.trim()));
+
+      registry.addConverter(String.class, TipoMovimiento.class,
+            valor -> TipoMovimiento.fromValor(valor.trim()));
    }
 }
