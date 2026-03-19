@@ -1,0 +1,56 @@
+body {
+   background-color: var(--fondo-bg);
+}
+
+.card {
+   border: none;
+   border-radius: 12px;
+   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1);
+}
+
+.fw-bold,
+.text-muted,
+.form-label,
+.form-check-label {
+   text-shadow: 0 1px 3px var(--color-text-shadow);
+   color: var(--color-text);
+}
+
+.form-check-input:checked {
+   background-color: var(--color-btn);
+   border-color: var(--color-btn);
+}
+
+.form-check-input:focus {
+   border-color: var(--color-hover);
+   box-shadow: 0 0 0 3px rgba(74, 161, 77, 0.2);
+}
+
+.btn.btn-primary {
+   border-radius: 14px;
+   background-color: var(--color-btn);
+   border: none;
+   font-weight: 600;
+   transition: transform 0.1s ease;
+}
+
+.btn.btn-primary:hover {
+   background-color: var(--color-hover);
+}
+
+.btn.btn-primary:active {
+   transform: scale(0.98);
+}
+
+.form-control {
+   border-radius: 14px;
+   border: 2px solid #ddd;
+   transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-control:hover {
+   border: 2px solid var(--color-hover);
+   outline: none;
+   box-shadow: 0 0 8px rgba(74, 161, 77, 0.2);
+}

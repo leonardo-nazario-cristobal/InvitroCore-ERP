@@ -55,7 +55,16 @@ public class AuthServiceImpl implements AuthService {
       String refreshToken = jwtService.generarRefreshToken(userDetails);
       refreshTokensValidos.add(refreshToken);
 
-      return new AuthResponseDTO(accessToken, refreshToken);
+      // Buscar el usuario para obtener nombre y rol
+      Usuario usuario = usuarioRepository.findByCorreoAndActivoTrue(dto.getCorreo())
+            .orElseThrow();
+
+      return new AuthResponseDTO(
+            accessToken,
+            refreshToken,
+            usuario.getNombre(),
+            usuario.getCorreo(),
+            usuario.getRol().getValor());
    }
 
    /* Register */
@@ -80,11 +89,15 @@ public class AuthServiceImpl implements AuthService {
 
       UserDetails userDetails = userDetailsService.loadUserByUsername(dto.getCorreo());
       String accessToken = jwtService.generarAccessToken(userDetails);
-      String rerefreshToken = jwtService.generarRefreshToken(userDetails);
+      String refreshToken = jwtService.generarRefreshToken(userDetails);
+      refreshTokensValidos.add(refreshToken);
 
-      refreshTokensValidos.add(rerefreshToken);
-
-      return new AuthResponseDTO(accessToken, rerefreshToken);
+      return new AuthResponseDTO(
+            accessToken,
+            refreshToken,
+            usuario.getNombre(),
+            usuario.getCorreo(),
+            usuario.getRol().getValor());
    }
 
    /* Refresh */
@@ -112,7 +125,16 @@ public class AuthServiceImpl implements AuthService {
       String nuevoRefreshToken = jwtService.generarRefreshToken(userDetails);
       refreshTokensValidos.add(nuevoRefreshToken);
 
-      return new AuthResponseDTO(nuevoAccessToken, nuevoRefreshToken);
+      // Buscar el usuario para obtener nombre y rol
+      Usuario usuario = usuarioRepository.findByCorreoAndActivoTrue(correo)
+            .orElseThrow();
+
+      return new AuthResponseDTO(
+            nuevoAccessToken,
+            nuevoRefreshToken,
+            usuario.getNombre(),
+            usuario.getCorreo(),
+            usuario.getRol().getValor());
    }
 
    /* Logout */
