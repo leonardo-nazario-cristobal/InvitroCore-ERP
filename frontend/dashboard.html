@@ -1,11 +1,180 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
    <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Document</title>
+      <title>InvitroCore ERP — Dashboard</title>
+      <link
+         rel="stylesheet"
+         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      />
+      <link rel="stylesheet" href="css/variables.css" />
+      <link rel="stylesheet" href="css/styles.css" />
+      <link rel="stylesheet" href="css/dashboard.css" />
    </head>
    <body>
-      <h1>Bienvenido</h1>
+      <div class="layout">
+         <!-- Sidebar -->
+         <aside class="sidebar">
+            <div class="sidebar-brand">
+               <div class="brand-logo">IC</div>
+               <div>
+                  <div class="brand-name">InvitroCore</div>
+                  <div class="brand-version">ERP v1.0</div>
+               </div>
+            </div>
+
+            <nav class="sidebar-nav">
+               <div class="nav-section">Principal</div>
+               <a href="dashboard.html" class="nav-item active">Dashboard</a>
+
+               <div class="nav-section">Inventario</div>
+               <a href="productos.html" class="nav-item">Productos</a>
+               <a href="categorias.html" class="nav-item" id="menu-categorias"
+                  >Categorías</a
+               >
+               <a href="movimientos.html" class="nav-item" id="menu-movimientos"
+                  >Movimientos</a
+               >
+
+               <div class="nav-section">Comercial</div>
+               <a href="ventas.html" class="nav-item" id="menu-ventas"
+                  >Ventas</a
+               >
+               <a href="compras.html" class="nav-item" id="menu-compras"
+                  >Compras</a
+               >
+               <a href="proveedores.html" class="nav-item" id="menu-proveedores"
+                  >Proveedores</a
+               >
+
+               <div class="nav-section">Administración</div>
+               <a href="usuarios.html" class="nav-item" id="menu-usuarios"
+                  >Usuarios</a
+               >
+            </nav>
+
+            <div class="sidebar-footer">
+               <div class="avatar" id="avatarInicial">AD</div>
+               <div class="footer-info">
+                  <div class="footer-name" id="footerNombre">Administrador</div>
+                  <div class="footer-rol" id="footerRol">admin</div>
+               </div>
+               <button class="logout-btn" id="btnLogout" title="Cerrar sesión">
+                  ✕
+               </button>
+            </div>
+         </aside>
+
+         <!-- Contenido principal -->
+         <main class="main">
+            <div class="topbar">
+               <div>
+                  <div class="page-title">Dashboard</div>
+                  <div class="page-subtitle" id="bienvenida">Bienvenido</div>
+               </div>
+            </div>
+
+            <div class="content">
+               <!-- Cards de estadísticas -->
+               <div class="stat-grid">
+                  <div class="stat-card">
+                     <div class="stat-label">Ventas hoy</div>
+                     <div
+                        class="stat-value"
+                        id="ventasHoy"
+                        style="color: var(--color-btn)"
+                     >
+                        $0
+                     </div>
+                     <div class="stat-sub" id="ventasHoySub">
+                        0 transacciones
+                     </div>
+                  </div>
+                  <div class="stat-card">
+                     <div class="stat-label">Productos activos</div>
+                     <div class="stat-value" id="totalProductos">0</div>
+                     <div class="stat-sub" id="stockBajoSub">
+                        0 con stock bajo
+                     </div>
+                  </div>
+                  <div class="stat-card">
+                     <div class="stat-label">Compras del mes</div>
+                     <div class="stat-value" id="comprasMes">$0</div>
+                     <div class="stat-sub" id="comprasMesSub">0 órdenes</div>
+                  </div>
+                  <div class="stat-card">
+                     <div class="stat-label">Proveedores</div>
+                     <div class="stat-value" id="totalProveedores">0</div>
+                     <div class="stat-sub">registrados</div>
+                  </div>
+               </div>
+
+               <!-- Tabla stock bajo -->
+               <div class="table-card">
+                  <div class="table-header">
+                     <span class="table-title">Productos con stock bajo</span>
+                     <span class="badge-warn" id="badgeStockBajo"
+                        >0 alertas</span
+                     >
+                  </div>
+                  <table class="table table-hover mb-0">
+                     <thead class="table-light">
+                        <tr>
+                           <th>Producto</th>
+                           <th>Código</th>
+                           <th>Stock actual</th>
+                           <th>Stock mínimo</th>
+                        </tr>
+                     </thead>
+                     <tbody id="tablaStockBajo">
+                        <tr>
+                           <td colspan="4" class="text-center text-muted py-3">
+                              Cargando...
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </main>
+      </div>
+
+      <!-- Modal bienvenida admin -->
+      <div
+         class="modal fade"
+         id="modalBienvenida"
+         tabindex="-1"
+         data-bs-focus="false"
+      >
+         <div class="modal-dialog modal-dialog-centered">
+            <div
+               class="modal-content"
+               style="border-radius: 16px; border: none"
+            >
+               <div class="modal-body text-center p-4">
+                  <div
+                     class="brand-logo mx-auto mb-3"
+                     style="width: 56px; height: 56px; font-size: 18px"
+                  >
+                     IC
+                  </div>
+                  <h5 class="fw-bold mb-1">¡Bienvenido de vuelta!</h5>
+                  <p class="text-muted mb-3" id="modalBienvenidaNombre"></p>
+                  <p class="text-muted" style="font-size: 13px">
+                     Tienes acceso completo al sistema InvitroCore ERP.
+                  </p>
+                  <button class="btn btn-primary w-100" data-bs-dismiss="modal">
+                     Continuar
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="js/guard.js"></script>
+      <script src="js/api.js"></script>
+      <script src="js/dashboard.js"></script>
    </body>
 </html>
