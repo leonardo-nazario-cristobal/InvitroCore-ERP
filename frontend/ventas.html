@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>InvitroCore ERP — Ventas</title>
+      <link
+         rel="stylesheet"
+         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      />
+      <link rel="stylesheet" href="css/variables.css" />
+      <link rel="stylesheet" href="css/styles.css" />
+      <link rel="stylesheet" href="css/panel.css" />
+      <link rel="stylesheet" href="css/compras.css" />
+      <link rel="stylesheet" href="css/ventas.css" />
+   </head>
+   <body>
+      <div class="layout">
+         <aside class="sidebar">
+            <div class="sidebar-brand">
+               <div class="brand-logo">IC</div>
+               <div>
+                  <div class="brand-name">InvitroCore</div>
+                  <div class="brand-version">ERP v1.0</div>
+               </div>
+            </div>
+            <nav class="sidebar-nav">
+               <div class="nav-section">Principal</div>
+               <a href="dashboard.html" class="nav-item">Dashboard</a>
+               <div class="nav-section">Inventario</div>
+               <a href="productos.html" class="nav-item">Productos</a>
+               <a href="categorias.html" class="nav-item" id="menu-categorias"
+                  >Categorías</a
+               >
+               <a href="movimientos.html" class="nav-item" id="menu-movimientos"
+                  >Movimientos</a
+               >
+               <div class="nav-section">Comercial</div>
+               <a href="ventas.html" class="nav-item active" id="menu-ventas"
+                  >Ventas</a
+               >
+               <a href="compras.html" class="nav-item" id="menu-compras"
+                  >Compras</a
+               >
+               <a href="proveedores.html" class="nav-item" id="menu-proveedores"
+                  >Proveedores</a
+               >
+               <div class="nav-section">Administración</div>
+               <a href="usuarios.html" class="nav-item" id="menu-usuarios"
+                  >Usuarios</a
+               >
+            </nav>
+            <div class="sidebar-footer">
+               <div class="avatar" id="avatarInicial">AD</div>
+               <div class="footer-info">
+                  <div class="footer-name" id="footerNombre">Administrador</div>
+                  <div class="footer-rol" id="footerRol">admin</div>
+               </div>
+               <button class="logout-btn" id="btnLogout" title="Cerrar sesión">
+                  ✕
+               </button>
+            </div>
+         </aside>
+
+         <main class="main">
+            <div class="topbar">
+               <div>
+                  <div class="page-title">Ventas</div>
+                  <div class="page-subtitle">Registro de ventas</div>
+               </div>
+               <button class="btn btn-primary btn-sm" id="btnNuevaVenta">
+                  + Nueva venta
+               </button>
+            </div>
+
+            <div class="content">
+               <div class="table-card">
+                  <div class="table-header">
+                     <span class="table-title">Historial de ventas</span>
+                     <div class="d-flex align-items-center gap-2">
+                        <select
+                           id="filtroEstado"
+                           class="form-select form-select-sm"
+                           style="width: auto"
+                        >
+                           <option value="">Todos los estados</option>
+                           <option value="completada">Completadas</option>
+                           <option value="cancelada">Canceladas</option>
+                           <option value="pendiente">Pendientes</option>
+                        </select>
+                        <span class="badge-count" id="totalVentas"
+                           >0 ventas</span
+                        >
+                     </div>
+                  </div>
+                  <table class="table table-hover mb-0">
+                     <thead class="table-light">
+                        <tr>
+                           <th>#</th>
+                           <th>Fecha</th>
+                           <th>Usuario</th>
+                           <th>Método pago</th>
+                           <th>Total</th>
+                           <th>Estado</th>
+                           <th>Acciones</th>
+                        </tr>
+                     </thead>
+                     <tbody id="tablaVentas">
+                        <tr>
+                           <td colspan="7" class="text-center text-muted py-3">
+                              Cargando...
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </main>
+
+         <!-- Panel nueva venta -->
+         <div class="panel-overlay" id="panelOverlay"></div>
+         <div class="panel-lateral panel-wide" id="panelLateral">
+            <div class="panel-header">
+               <h6 class="panel-title">Nueva venta</h6>
+               <button class="panel-close" id="panelClose">✕</button>
+            </div>
+            <div class="panel-body">
+               <div id="alertaPanel" class="alert alert-danger d-none"></div>
+
+               <form id="formVenta">
+                  <!-- Método de pago -->
+                  <div class="mb-3">
+                     <label class="form-label">Método de pago</label>
+                     <select id="inputMetodoPago" class="form-select" required>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="tarjeta">Tarjeta</option>
+                        <option value="transferencia">Transferencia</option>
+                     </select>
+                  </div>
+
+                  <!-- Detalles -->
+                  <div class="mb-3">
+                     <div
+                        class="d-flex justify-content-between align-items-center mb-2"
+                     >
+                        <label class="form-label mb-0">Productos</label>
+                        <button
+                           type="button"
+                           class="btn btn-outline-primary btn-sm"
+                           id="btnAgregarDetalle"
+                        >
+                           + Agregar
+                        </button>
+                     </div>
+
+                     <div id="listaDetalles"></div>
+
+                     <div
+                        id="sinDetalles"
+                        class="text-center text-muted py-3"
+                        style="font-size: 13px"
+                     >
+                        Sin productos agregados
+                     </div>
+                  </div>
+
+                  <!-- Total -->
+                  <div class="total-compra mb-4">
+                     <span>Total</span>
+                     <span id="totalVenta">$0.00</span>
+                  </div>
+
+                  <div class="d-flex gap-2">
+                     <button
+                        type="button"
+                        class="btn btn-secondary flex-fill"
+                        id="btnCancelarPanel"
+                     >
+                        Cancelar
+                     </button>
+                     <button
+                        type="submit"
+                        class="btn btn-primary flex-fill"
+                        id="btnGuardarVenta"
+                     >
+                        Registrar venta
+                     </button>
+                  </div>
+               </form>
+            </div>
+         </div>
+
+         <!-- Modal ver detalles -->
+         <div
+            class="modal fade"
+            id="modalDetalles"
+            tabindex="-1"
+            data-bs-focus="false"
+         >
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+               <div
+                  class="modal-content"
+                  style="border-radius: 16px; border: none"
+               >
+                  <div class="modal-header border-0 pb-0">
+                     <h6 class="fw-bold" id="modalDetallesTitulo">
+                        Detalles de venta
+                     </h6>
+                     <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                     ></button>
+                  </div>
+                  <div class="modal-body">
+                     <table class="table table-hover">
+                        <thead class="table-light">
+                           <tr>
+                              <th>Producto</th>
+                              <th>Código</th>
+                              <th>Cantidad</th>
+                              <th>Precio unitario</th>
+                              <th>Subtotal</th>
+                           </tr>
+                        </thead>
+                        <tbody id="tablaDetallesModal"></tbody>
+                     </table>
+                     <div
+                        class="text-end fw-bold"
+                        id="totalDetallesModal"
+                     ></div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="js/guard.js"></script>
+      <script src="js/api.js"></script>
+      <script src="js/ventas.js"></script>
+   </body>
+</html>

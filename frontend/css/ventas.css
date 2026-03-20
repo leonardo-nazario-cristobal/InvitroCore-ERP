@@ -1,0 +1,48 @@
+/* ── Badges de estado ──────────────────────── */
+.badge-completada {
+   background: #e8f5e9;
+   color: #2e7d32;
+   font-size: 11px;
+   padding: 3px 10px;
+   border-radius: 20px;
+   font-weight: 500;
+}
+.badge-cancelada {
+   background: #ffeaea;
+   color: #c62828;
+   font-size: 11px;
+   padding: 3px 10px;
+   border-radius: 20px;
+   font-weight: 500;
+}
+.badge-pendiente {
+   background: #fff3e0;
+   color: #e65100;
+   font-size: 11px;
+   padding: 3px 10px;
+   border-radius: 20px;
+   font-weight: 500;
+}
+
+/* ── Badges de método de pago ──────────────── */
+.badge-efectivo {
+   background: #e0f2f1;
+   color: #00796b;
+   font-size: 11px;
+   padding: 3px 10px;
+   border-radius: 20px;
+}
+.badge-tarjeta {
+   background: #e8eaf6;
+   color: #3949ab;
+   font-size: 11px;
+   padding: 3px 10px;
+   border-radius: 20px;
+}
+.badge-transferencia {
+   background: #fce4ec;
+   color: #c2185b;
+   font-size: 11px;
+   padding: 3px 10px;
+   border-radius: 20px;
+}
