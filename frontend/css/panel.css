@@ -1,0 +1,81 @@
+/* ── Panel lateral compartido ──────────────── */
+.panel-overlay {
+   position: fixed;
+   inset: 0;
+   background: rgba(0, 0, 0, 0.3);
+   opacity: 0;
+   pointer-events: none;
+   transition: opacity 0.25s ease;
+   z-index: 100;
+}
+
+.panel-overlay.activo {
+   opacity: 1;
+   pointer-events: all;
+}
+
+.panel-lateral {
+   position: fixed;
+   top: 0;
+   right: -420px;
+   width: 420px;
+   height: 100vh;
+   background: #fff;
+   border-left: 1px solid #e9ecef;
+   display: flex;
+   flex-direction: column;
+   transition: right 0.25s ease;
+   z-index: 101;
+   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+}
+
+.panel-lateral.activo {
+   right: 0;
+}
+
+.panel-header {
+   padding: 1.25rem 1.5rem;
+   border-bottom: 1px solid #e9ecef;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+}
+
+.panel-title {
+   font-weight: 600;
+   font-size: 15px;
+   color: #1a1a1a;
+   margin: 0;
+}
+
+.panel-close {
+   width: 28px;
+   height: 28px;
+   border: none;
+   background: none;
+   color: #aaa;
+   cursor: pointer;
+   border-radius: 6px;
+   transition: all 0.15s;
+}
+
+.panel-close:hover {
+   background: #ffeaea;
+   color: #e53935;
+}
+
+.panel-body {
+   flex: 1;
+   padding: 1.5rem;
+   overflow-y: auto;
+}
+
+/* ── Badge count compartido ────────────────── */
+.badge-count {
+   font-size: 11px;
+   background: #f0faf0;
+   color: var(--color-btn);
+   padding: 3px 10px;
+   border-radius: 20px;
+   font-weight: 500;
+}
