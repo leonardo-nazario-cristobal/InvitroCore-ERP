@@ -52,7 +52,7 @@ public class DetalleVenta {
       return cantidad;
    }
 
-   public BigDecimal getPrecioUnutario() {
+   public BigDecimal getPrecioUnitario() {
       return precioUnutario;
    }
 

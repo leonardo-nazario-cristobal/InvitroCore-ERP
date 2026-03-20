@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CompraService {
 
-   CompraResponseDTO registrar(CompraRequestDTO dto);
+   CompraResponseDTO registrar(CompraRequestDTO dto, String correoUsuario);
 
    CompraResponseDTO obtenerPorId(Long id);
 

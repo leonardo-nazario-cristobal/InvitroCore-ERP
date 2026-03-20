@@ -13,6 +13,11 @@ import com.invitrocore.model.Proveedor;
 import com.invitrocore.repository.CompraRepository;
 import com.invitrocore.repository.ProductoRepository;
 import com.invitrocore.repository.ProveedorRepository;
+import com.invitrocore.repository.UsuarioRepository;
+import com.invitrocore.model.MovimientoInventario;
+import com.invitrocore.model.TipoMovimiento;
+import com.invitrocore.model.Usuario;
+import com.invitrocore.repository.MovimientoInventarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,24 +32,32 @@ public class CompraServiceImpl implements CompraService {
    private final CompraRepository compraRepository;
    private final ProveedorRepository proveedorRepository;
    private final ProductoRepository productoRepository;
+   private final MovimientoInventarioRepository movimientoRepository;
+   private final UsuarioRepository usuarioRepository;
 
    public CompraServiceImpl(CompraRepository compraRepository,
          ProveedorRepository proveedorRepository,
-         ProductoRepository productoRepository) {
+         ProductoRepository productoRepository,
+         MovimientoInventarioRepository movimientoRepository,
+         UsuarioRepository usuarioRepository) {
       this.compraRepository = compraRepository;
       this.proveedorRepository = proveedorRepository;
       this.productoRepository = productoRepository;
+      this.movimientoRepository = movimientoRepository;
+      this.usuarioRepository = usuarioRepository;
    }
 
    /* Registrar */
 
    @Override
    @Transactional
-   public CompraResponseDTO registrar(CompraRequestDTO dto) {
+   public CompraResponseDTO registrar(CompraRequestDTO dto, String correoUsuario) {
 
       Proveedor proveedor = buscarProveedorOFallar(dto.getIdProveedor());
-
       validarProductosDuplicados(dto);
+
+      // ← igual que ventas
+      Usuario usuario = buscarUsuarioActivoOFallar(correoUsuario);
 
       Compra compra = new Compra(proveedor);
 
@@ -60,6 +73,14 @@ public class CompraServiceImpl implements CompraService {
          producto.agregarStock(detalleDTO.getCantidad());
          recalcularCostoPromedio(producto, detalleDTO.getCantidad(), detalleDTO.getCostoUnitario());
          productoRepository.save(producto);
+
+         movimientoRepository.save(new MovimientoInventario(
+               producto,
+               TipoMovimiento.ENTRADA,
+               detalleDTO.getCantidad(),
+               "Compra registrada — " + proveedor.getNombre(),
+               usuario // ← ya no es null
+         ));
       }
 
       return toDTO(compraRepository.save(compra));
@@ -106,6 +127,12 @@ public class CompraServiceImpl implements CompraService {
    }
 
    /* Helpers privados */
+
+   private Usuario buscarUsuarioActivoOFallar(String correo) {
+      return usuarioRepository.findByCorreoAndActivoTrue(correo)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                  "Usuario no encontrado o inactivo: " + correo));
+   }
 
    private Proveedor buscarProveedorOFallar(Long id) {
       return proveedorRepository.findById(id)

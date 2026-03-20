@@ -8,6 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
@@ -26,10 +28,11 @@ public class CompraController {
    /* POST /api/compras */
    @PostMapping
    @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
-   public ResponseEntity<CompraResponseDTO> registar(
-         @Valid @RequestBody CompraRequestDTO dto) {
-
-      return ResponseEntity.status(HttpStatus.CREATED).body(compraService.registrar(dto));
+   public ResponseEntity<CompraResponseDTO> registrar(
+         @Valid @RequestBody CompraRequestDTO dto,
+         @AuthenticationPrincipal UserDetails userDetails) {
+      return ResponseEntity.status(HttpStatus.CREATED)
+            .body(compraService.registrar(dto, userDetails.getUsername()));
    }
 
    /* GET /api/compras */

@@ -8,6 +8,7 @@ import com.invitrocore.exception.BadRequestException;
 import com.invitrocore.exception.ResourceNotFoundException;
 import com.invitrocore.model.*;
 import com.invitrocore.repository.ProductoRepository;
+import com.invitrocore.repository.MovimientoInventarioRepository;
 import com.invitrocore.repository.UsuarioRepository;
 import com.invitrocore.repository.VentaRepository;
 import org.springframework.stereotype.Service;
@@ -23,14 +24,17 @@ public class VentaServiceImpl implements VentaService {
    private final VentaRepository ventaRepository;
    private final ProductoRepository productoRepository;
    private final UsuarioRepository usuarioRepository;
+   private final MovimientoInventarioRepository movimientoRepository;
 
    public VentaServiceImpl(VentaRepository ventaRepository,
          ProductoRepository productoRepository,
-         UsuarioRepository usuarioRepository) {
+         UsuarioRepository usuarioRepository,
+         MovimientoInventarioRepository movimientoRepository) {
 
       this.ventaRepository = ventaRepository;
       this.productoRepository = productoRepository;
       this.usuarioRepository = usuarioRepository;
+      this.movimientoRepository = movimientoRepository;
    }
 
    /* Registrar */
@@ -47,7 +51,6 @@ public class VentaServiceImpl implements VentaService {
 
       for (DetalleVentaRequestDTO detalleDTO : dto.getDetalles()) {
          Producto producto = buscarProductoActivoOFallar(detalleDTO.getIdProducto());
-
          validarStockSuficiente(producto, detalleDTO.getCantidad());
 
          BigDecimal precio = detalleDTO.getPrecioUnitario() != null
@@ -55,12 +58,16 @@ public class VentaServiceImpl implements VentaService {
                : producto.getPrecio();
 
          DetalleVenta detalle = new DetalleVenta(venta, producto, detalleDTO.getCantidad(), precio);
-
          venta.agregarDetalle(detalle);
-
          producto.reducirStock(detalleDTO.getCantidad());
-
          productoRepository.save(producto);
+
+         movimientoRepository.save(new MovimientoInventario(
+               producto,
+               TipoMovimiento.SALIDA,
+               detalleDTO.getCantidad(),
+               "Venta registrada",
+               usuario));
       }
 
       return toDTO(ventaRepository.save(venta));
@@ -128,10 +135,21 @@ public class VentaServiceImpl implements VentaService {
 
       venta.cancelar();
 
+      // ← buscar usuario igual que en registrar
+      Usuario usuario = buscarUsuarioActivoOFallar(correoUsuario);
+
       for (DetalleVenta detalle : venta.getDetalles()) {
          Producto producto = detalle.getProducto();
          producto.agregarStock(detalle.getCantidad());
          productoRepository.save(producto);
+
+         movimientoRepository.save(new MovimientoInventario(
+               producto,
+               TipoMovimiento.ENTRADA,
+               detalle.getCantidad(),
+               "Cancelación de venta #" + venta.getId(),
+               usuario // ← ya no es null
+         ));
       }
 
       return toDTO(ventaRepository.save(venta));
@@ -200,7 +218,7 @@ public class VentaServiceImpl implements VentaService {
             d.getProducto().getNombre(),
             d.getProducto().getCodigoBarras(),
             d.getCantidad(),
-            d.getPrecioUnutario(),
+            d.getPrecioUnitario(),
             d.getSubtotal());
    }
 }

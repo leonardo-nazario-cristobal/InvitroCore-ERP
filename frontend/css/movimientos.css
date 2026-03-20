@@ -1,0 +1,25 @@
+/* ── Badges de tipo ────────────────────────── */
+.badge-entrada {
+   background: #e8f5e9;
+   color: #2e7d32;
+   font-size: 11px;
+   padding: 3px 10px;
+   border-radius: 20px;
+   font-weight: 500;
+}
+.badge-salida {
+   background: #ffeaea;
+   color: #c62828;
+   font-size: 11px;
+   padding: 3px 10px;
+   border-radius: 20px;
+   font-weight: 500;
+}
+.badge-ajuste {
+   background: #fff3e0;
+   color: #e65100;
+   font-size: 11px;
+   padding: 3px 10px;
+   border-radius: 20px;
+   font-weight: 500;
+}
