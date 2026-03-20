@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>InvitroCore ERP — Proveedores</title>
+      <link
+         rel="stylesheet"
+         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      />
+      <link rel="stylesheet" href="css/variables.css" />
+      <link rel="stylesheet" href="css/styles.css" />
+      <link rel="stylesheet" href="css/dashboard.css" />
+      <link rel="stylesheet" href="css/panel.css" />
+   </head>
+   <body>
+      <div class="layout">
+         <aside class="sidebar">
+            <div class="sidebar-brand">
+               <div class="brand-logo">IC</div>
+               <div>
+                  <div class="brand-name">InvitroCore</div>
+                  <div class="brand-version">ERP v1.0</div>
+               </div>
+            </div>
+            <nav class="sidebar-nav">
+               <div class="nav-section">Principal</div>
+               <a href="dashboard.html" class="nav-item">Dashboard</a>
+               <div class="nav-section">Inventario</div>
+               <a href="productos.html" class="nav-item">Productos</a>
+               <a href="categorias.html" class="nav-item" id="menu-categorias"
+                  >Categorías</a
+               >
+               <a href="movimientos.html" class="nav-item" id="menu-movimientos"
+                  >Movimientos</a
+               >
+               <div class="nav-section">Comercial</div>
+               <a href="ventas.html" class="nav-item" id="menu-ventas"
+                  >Ventas</a
+               >
+               <a href="compras.html" class="nav-item" id="menu-compras"
+                  >Compras</a
+               >
+               <a
+                  href="proveedores.html"
+                  class="nav-item active"
+                  id="menu-proveedores"
+                  >Proveedores</a
+               >
+               <div class="nav-section">Administración</div>
+               <a href="usuarios.html" class="nav-item" id="menu-usuarios"
+                  >Usuarios</a
+               >
+            </nav>
+            <div class="sidebar-footer">
+               <div class="avatar" id="avatarInicial">AD</div>
+               <div class="footer-info">
+                  <div class="footer-name" id="footerNombre">Administrador</div>
+                  <div class="footer-rol" id="footerRol">admin</div>
+               </div>
+               <button class="logout-btn" id="btnLogout" title="Cerrar sesión">
+                  ✕
+               </button>
+            </div>
+         </aside>
+
+         <main class="main">
+            <div class="topbar">
+               <div>
+                  <div class="page-title">Proveedores</div>
+                  <div class="page-subtitle">Gestión de proveedores</div>
+               </div>
+               <button class="btn btn-primary btn-sm" id="btnNuevoProveedor">
+                  + Nuevo proveedor
+               </button>
+            </div>
+
+            <div class="content">
+               <div class="table-card">
+                  <div class="table-header">
+                     <span class="table-title">Lista de proveedores</span>
+                     <span class="badge-count" id="totalProveedores"
+                        >0 proveedores</span
+                     >
+                  </div>
+                  <table class="table table-hover mb-0">
+                     <thead class="table-light">
+                        <tr>
+                           <th>Nombre</th>
+                           <th>Teléfono</th>
+                           <th>Correo</th>
+                           <th>Acciones</th>
+                        </tr>
+                     </thead>
+                     <tbody id="tablaProveedores">
+                        <tr>
+                           <td colspan="4" class="text-center text-muted py-3">
+                              Cargando...
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </main>
+
+         <!-- Panel lateral -->
+         <div class="panel-overlay" id="panelOverlay"></div>
+         <div class="panel-lateral" id="panelLateral">
+            <div class="panel-header">
+               <h6 class="panel-title" id="panelTitulo">Nuevo proveedor</h6>
+               <button class="panel-close" id="panelClose">✕</button>
+            </div>
+            <div class="panel-body">
+               <div id="alertaPanel" class="alert alert-danger d-none"></div>
+               <form id="formProveedor">
+                  <input type="hidden" id="proveedorId" />
+                  <div class="mb-3">
+                     <label class="form-label">Nombre</label>
+                     <input
+                        type="text"
+                        id="inputNombre"
+                        class="form-control"
+                        placeholder="Ej. TechSupplies SA"
+                        required
+                     />
+                  </div>
+                  <div class="mb-3">
+                     <label class="form-label"
+                        >Teléfono
+                        <span class="text-muted">(opcional)</span></label
+                     >
+                     <input
+                        type="text"
+                        id="inputTelefono"
+                        class="form-control"
+                        placeholder="Ej. 555-1234"
+                     />
+                  </div>
+                  <div class="mb-4">
+                     <label class="form-label"
+                        >Correo
+                        <span class="text-muted">(opcional)</span></label
+                     >
+                     <input
+                        type="email"
+                        id="inputCorreo"
+                        class="form-control"
+                        placeholder="contacto@proveedor.com"
+                     />
+                  </div>
+                  <div class="d-flex gap-2">
+                     <button
+                        type="button"
+                        class="btn btn-secondary flex-fill"
+                        id="btnCancelarPanel"
+                     >
+                        Cancelar
+                     </button>
+                     <button
+                        type="submit"
+                        class="btn btn-primary flex-fill"
+                        id="btnGuardarProveedor"
+                     >
+                        Guardar
+                     </button>
+                  </div>
+               </form>
+            </div>
+         </div>
+
+         <!-- Modal confirmar eliminar -->
+         <div
+            class="modal fade"
+            id="modalEliminar"
+            tabindex="-1"
+            data-bs-focus="false"
+         >
+            <div class="modal-dialog modal-dialog-centered">
+               <div
+                  class="modal-content"
+                  style="border-radius: 16px; border: none"
+               >
+                  <div class="modal-body text-center p-4">
+                     <div style="font-size: 40px; margin-bottom: 1rem">🗑️</div>
+                     <h5 class="fw-bold mb-2">¿Eliminar proveedor?</h5>
+                     <p class="text-muted mb-4" id="modalEliminarNombre"></p>
+                     <div class="d-flex gap-2">
+                        <button
+                           class="btn btn-secondary flex-fill"
+                           data-bs-dismiss="modal"
+                        >
+                           Cancelar
+                        </button>
+                        <button
+                           class="btn btn-danger flex-fill"
+                           id="btnConfirmarEliminar"
+                        >
+                           Eliminar
+                        </button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="js/guard.js"></script>
+      <script src="js/api.js"></script>
+      <script src="js/proveedores.js"></script>
+   </body>
+</html>
