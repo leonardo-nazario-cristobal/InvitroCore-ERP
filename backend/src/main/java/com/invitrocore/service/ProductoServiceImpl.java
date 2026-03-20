@@ -80,6 +80,23 @@ public class ProductoServiceImpl implements ProductoService {
    }
 
    @Override
+   public List<ProductoResponseDTO> listarInactivos() {
+      return productoRepository.findAll()
+            .stream()
+            .filter(p -> !p.isActivo())
+            .map(this::toDTO)
+            .toList();
+   }
+
+   @Override
+   public List<ProductoResponseDTO> listarTodos() {
+      return productoRepository.findAll()
+            .stream()
+            .map(this::toDTO)
+            .toList();
+   }
+
+   @Override
    public List<ProductoResponseDTO> listarPorCategoria(Long idCategoria) {
       return productoRepository.findByActivoTrueAndCategoriaId(idCategoria)
             .stream()

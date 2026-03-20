@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>InvitroCore ERP — Productos</title>
+      <link
+         rel="stylesheet"
+         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      />
+      <link rel="stylesheet" href="css/variables.css" />
+      <link rel="stylesheet" href="css/styles.css" />
+      <link rel="stylesheet" href="css/panel.css" />
+      <link rel="stylesheet" href="css/productos.css" />
+   </head>
+   <body>
+      <div class="layout">
+         <aside class="sidebar">
+            <div class="sidebar-brand">
+               <div class="brand-logo">IC</div>
+               <div>
+                  <div class="brand-name">InvitroCore</div>
+                  <div class="brand-version">ERP v1.0</div>
+               </div>
+            </div>
+            <nav class="sidebar-nav">
+               <div class="nav-section">Principal</div>
+               <a href="dashboard.html" class="nav-item">Dashboard</a>
+               <div class="nav-section">Inventario</div>
+               <a href="productos.html" class="nav-item active">Productos</a>
+               <a href="categorias.html" class="nav-item" id="menu-categorias"
+                  >Categorías</a
+               >
+               <a href="movimientos.html" class="nav-item" id="menu-movimientos"
+                  >Movimientos</a
+               >
+               <div class="nav-section">Comercial</div>
+               <a href="ventas.html" class="nav-item" id="menu-ventas"
+                  >Ventas</a
+               >
+               <a href="compras.html" class="nav-item" id="menu-compras"
+                  >Compras</a
+               >
+               <a href="proveedores.html" class="nav-item" id="menu-proveedores"
+                  >Proveedores</a
+               >
+               <div class="nav-section">Administración</div>
+               <a href="usuarios.html" class="nav-item" id="menu-usuarios"
+                  >Usuarios</a
+               >
+            </nav>
+            <div class="sidebar-footer">
+               <div class="avatar" id="avatarInicial">AD</div>
+               <div class="footer-info">
+                  <div class="footer-name" id="footerNombre">Administrador</div>
+                  <div class="footer-rol" id="footerRol">admin</div>
+               </div>
+               <button class="logout-btn" id="btnLogout" title="Cerrar sesión">
+                  ✕
+               </button>
+            </div>
+         </aside>
+
+         <main class="main">
+            <div class="topbar">
+               <div>
+                  <div class="page-title">Productos</div>
+                  <div class="page-subtitle">
+                     Gestión del catálogo de productos
+                  </div>
+               </div>
+               <button class="btn btn-primary btn-sm" id="btnNuevoProducto">
+                  + Nuevo producto
+               </button>
+            </div>
+
+            <div class="content">
+               <div class="table-card">
+                  <div class="table-header">
+                     <span class="table-title">Lista de productos</span>
+                     <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <!-- Buscador por nombre -->
+                        <input
+                           type="text"
+                           id="buscador"
+                           class="form-control form-control-sm"
+                           placeholder="Buscar por nombre..."
+                           style="width: 180px"
+                        />
+
+                        <!-- Buscar por código de barras -->
+                        <input
+                           type="text"
+                           id="buscadorCodigo"
+                           class="form-control form-control-sm"
+                           placeholder="Código de barras..."
+                           style="width: 160px"
+                        />
+
+                        <!-- Filtro categoría -->
+                        <select
+                           id="filtroCategorias"
+                           class="form-select form-select-sm"
+                           style="width: auto"
+                        >
+                           <option value="">Todas las categorías</option>
+                        </select>
+
+                        <!-- Filtro estado productos -->
+                        <select
+                           id="filtroEstado"
+                           class="form-select form-select-sm"
+                           style="width: auto"
+                        >
+                           <option value="activos">Activos</option>
+                           <option value="todos">Todos</option>
+                           <option value="inactivos">Inactivos</option>
+                        </select>
+
+                        <!-- Filtro stock bajo — solo admin y compras -->
+                        <button
+                           class="btn btn-sm btn-outline-warning"
+                           id="btnStockBajo"
+                           style="display: none"
+                        >
+                           Stock bajo
+                        </button>
+
+                        <span class="badge-count" id="totalProductos"
+                           >0 productos</span
+                        >
+                     </div>
+                  </div>
+                  <table class="table table-hover mb-0">
+                     <thead class="table-light">
+                        <tr>
+                           <th>Código</th>
+                           <th>Nombre</th>
+                           <th>Categoría</th>
+                           <th>Precio</th>
+                           <th>Stock</th>
+                           <th>Estado</th>
+                           <th>Acciones</th>
+                        </tr>
+                     </thead>
+                     <tbody id="tablaProductos">
+                        <tr>
+                           <td colspan="7" class="text-center text-muted py-3">
+                              Cargando...
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </main>
+
+         <!-- Panel lateral -->
+         <div class="panel-overlay" id="panelOverlay"></div>
+         <div class="panel-lateral" id="panelLateral">
+            <div class="panel-header">
+               <h6 class="panel-title" id="panelTitulo">Nuevo producto</h6>
+               <button class="panel-close" id="panelClose">✕</button>
+            </div>
+            <div class="panel-body">
+               <div id="alertaPanel" class="alert alert-danger d-none"></div>
+               <form id="formProducto">
+                  <input type="hidden" id="productoId" />
+
+                  <div class="mb-3">
+                     <label class="form-label">Nombre</label>
+                     <input
+                        type="text"
+                        id="inputNombre"
+                        class="form-control"
+                        placeholder="Ej. Laptop HP EliteBook"
+                        required
+                     />
+                  </div>
+
+                  <div class="mb-3">
+                     <label class="form-label"
+                        >Descripción
+                        <span class="text-muted">(opcional)</span></label
+                     >
+                     <textarea
+                        id="inputDescripcion"
+                        class="form-control"
+                        placeholder="Describe el producto..."
+                        rows="2"
+                     ></textarea>
+                  </div>
+
+                  <div class="row g-3 mb-3">
+                     <div class="col-6">
+                        <label class="form-label">Precio</label>
+                        <input
+                           type="number"
+                           id="inputPrecio"
+                           class="form-control"
+                           placeholder="0.00"
+                           step="0.01"
+                           min="0.01"
+                           required
+                        />
+                     </div>
+                     <div class="col-6">
+                        <label class="form-label">Stock mínimo</label>
+                        <input
+                           type="number"
+                           id="inputStockMinimo"
+                           class="form-control"
+                           placeholder="5"
+                           min="0"
+                        />
+                     </div>
+                  </div>
+
+                  <div class="mb-3">
+                     <label class="form-label"
+                        >Categoría
+                        <span class="text-muted">(opcional)</span></label
+                     >
+                     <select id="inputCategoria" class="form-select">
+                        <option value="">Sin categoría</option>
+                     </select>
+                  </div>
+
+                  <div class="mb-4">
+                     <label class="form-label"
+                        >Código de barras
+                        <span class="text-muted">(opcional)</span></label
+                     >
+                     <input
+                        type="text"
+                        id="inputCodigoBarras"
+                        class="form-control"
+                        placeholder="Se genera automáticamente"
+                     />
+                  </div>
+
+                  <div class="d-flex gap-2">
+                     <button
+                        type="button"
+                        class="btn btn-secondary flex-fill"
+                        id="btnCancelarPanel"
+                     >
+                        Cancelar
+                     </button>
+                     <button
+                        type="submit"
+                        class="btn btn-primary flex-fill"
+                        id="btnGuardarProducto"
+                     >
+                        Guardar
+                     </button>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="js/guard.js"></script>
+      <script src="js/api.js"></script>
+      <script src="js/productos.js"></script>
+   </body>
+</html>

@@ -1,0 +1,40 @@
+/* ── Stock badges ──────────────────────────── */
+.stock-ok {
+   color: #2e7d32;
+   font-weight: 500;
+}
+.stock-low {
+   color: #e65100;
+   font-weight: 500;
+}
+.stock-zero {
+   color: #c62828;
+   font-weight: 500;
+}
+
+/* ── Buscador ──────────────────────────────── */
+#buscador {
+   border-radius: 8px;
+   border: 1.5px solid #e9ecef;
+   font-size: 13px;
+   transition: all 0.2s;
+}
+
+#buscador:focus {
+   border-color: var(--color-hover);
+   box-shadow: 0 0 0 3px rgba(74, 161, 77, 0.15);
+}
+
+/* ── Filtro categoría ──────────────────────── */
+#filtroCategorias {
+   border-radius: 8px;
+   border: 1.5px solid #e9ecef;
+   font-size: 13px;
+   transition: all 0.2s;
+}
+
+#filtroCategorias:focus {
+   border-color: var(--color-hover);
+   box-shadow: 0 0 0 3px rgba(74, 161, 77, 0.15);
+   outline: none;
+}

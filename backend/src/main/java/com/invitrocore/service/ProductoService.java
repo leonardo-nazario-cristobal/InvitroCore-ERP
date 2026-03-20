@@ -16,6 +16,10 @@ public interface ProductoService {
 
    List<ProductoResponseDTO> listar();
 
+   List<ProductoResponseDTO> listarInactivos();
+
+   List<ProductoResponseDTO> listarTodos();
+
    List<ProductoResponseDTO> listarPorCategoria(Long idCategoria);
 
    List<ProductoResponseDTO> buscarPorNombre(String nombre);

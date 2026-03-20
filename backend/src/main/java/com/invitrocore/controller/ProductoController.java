@@ -39,6 +39,18 @@ public class ProductoController {
       return ResponseEntity.ok(productoService.listar());
    }
 
+   @GetMapping("/inactivos")
+   @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
+   public ResponseEntity<List<ProductoResponseDTO>> listarInactivos() {
+      return ResponseEntity.ok(productoService.listarInactivos());
+   }
+
+   @GetMapping("/todos")
+   @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
+   public ResponseEntity<List<ProductoResponseDTO>> listarTodos() {
+      return ResponseEntity.ok(productoService.listarTodos());
+   }
+
    /* GET /api/productos/{id} */
 
    @GetMapping("/{id}")
