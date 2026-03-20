@@ -14,6 +14,10 @@ public interface UsuarioService {
 
    List<UsuarioResponseDTO> listarUsuarios();
 
+   List<UsuarioResponseDTO> listarInactivos();
+
+   List<UsuarioResponseDTO> listarTodos();
+
    UsuarioResponseDTO actualizarUsuario(Long id, UsuarioRequestDTO dto);
 
    void desactivarUsuario(Long id);

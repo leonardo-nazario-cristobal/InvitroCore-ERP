@@ -41,6 +41,18 @@ public class UsuarioController {
       return ResponseEntity.ok(usuarioService.listarUsuarios());
    }
 
+   @GetMapping("/inactivos")
+   @PreAuthorize("hasRole('ADMIN')")
+   public ResponseEntity<List<UsuarioResponseDTO>> listarInactivos() {
+      return ResponseEntity.ok(usuarioService.listarInactivos());
+   }
+
+   @GetMapping("/todos")
+   @PreAuthorize("hasRole('ADMIN')")
+   public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
+      return ResponseEntity.ok(usuarioService.listarTodos());
+   }
+
    /* GET /api/usuarios/{id} */
 
    @GetMapping("/{id}")

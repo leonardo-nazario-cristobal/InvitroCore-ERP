@@ -63,6 +63,23 @@ public class UsuarioServiceImpl implements UsuarioService {
             .toList();
    }
 
+   @Override
+   public List<UsuarioResponseDTO> listarInactivos() {
+      return usuarioRepository.findAll()
+            .stream()
+            .filter(u -> !u.isActivo())
+            .map(this::toDTO)
+            .toList();
+   }
+
+   @Override
+   public List<UsuarioResponseDTO> listarTodos() {
+      return usuarioRepository.findAll()
+            .stream()
+            .map(this::toDTO)
+            .toList();
+   }
+
    /* Actualizar */
 
    @Override
