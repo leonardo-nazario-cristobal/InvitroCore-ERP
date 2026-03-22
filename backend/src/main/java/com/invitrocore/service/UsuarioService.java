@@ -3,8 +3,7 @@ package com.invitrocore.service;
 import com.invitrocore.dto.UsuarioRequestDTO;
 import com.invitrocore.dto.UsuarioResponseDTO;
 import com.invitrocore.model.TipoRol;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface UsuarioService {
 
@@ -12,11 +11,11 @@ public interface UsuarioService {
 
    UsuarioResponseDTO obtenerPorId(Long id);
 
-   List<UsuarioResponseDTO> listarUsuarios();
+   Page<UsuarioResponseDTO> listarUsuarios(int pagina, int tamanio);
 
-   List<UsuarioResponseDTO> listarInactivos();
+   Page<UsuarioResponseDTO> listarInactivos(int pagina, int tamanio);
 
-   List<UsuarioResponseDTO> listarTodos();
+   Page<UsuarioResponseDTO> listarTodos(int pagina, int tamanios);
 
    UsuarioResponseDTO actualizarUsuario(Long id, UsuarioRequestDTO dto);
 

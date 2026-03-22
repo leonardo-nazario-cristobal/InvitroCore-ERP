@@ -5,6 +5,8 @@ import com.invitrocore.dto.MovimientoInventarioResponseDTO;
 import com.invitrocore.model.TipoMovimiento;
 import com.invitrocore.service.MovimientoInventarioService;
 import jakarta.validation.Valid;
+
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +42,11 @@ public class MovimientoInventarioController {
    /* GET /api/movimientos */
 
    @GetMapping
-   @PreAuthorize("hasAnyRole('ADMIN', 'CCMPRAS')")
-   public ResponseEntity<List<MovimientoInventarioResponseDTO>> listar() {
-      return ResponseEntity.ok(movimientoService.listar());
+   @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
+   public ResponseEntity<Page<MovimientoInventarioResponseDTO>> listar(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(movimientoService.listar(pagina, tamanio));
    }
 
    /* GET /api/movimientos/{id} */
@@ -67,9 +71,11 @@ public class MovimientoInventarioController {
 
    @GetMapping("/tipo")
    @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
-   public ResponseEntity<List<MovimientoInventarioResponseDTO>> listarPorTipo(
-         @RequestParam TipoMovimiento valor) {
-      return ResponseEntity.ok(movimientoService.listarPorTipo(valor));
+   public ResponseEntity<Page<MovimientoInventarioResponseDTO>> listarPorTipo(
+         @RequestParam TipoMovimiento valor,
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(movimientoService.listarPorTipo(valor, pagina, tamanio));
    }
 
    /* GET /api/usuario/{idUsuario} */

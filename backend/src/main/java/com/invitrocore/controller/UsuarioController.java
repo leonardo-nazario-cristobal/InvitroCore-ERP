@@ -5,12 +5,11 @@ import com.invitrocore.dto.UsuarioResponseDTO;
 import com.invitrocore.model.TipoRol;
 import com.invitrocore.service.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -37,20 +36,26 @@ public class UsuarioController {
 
    @GetMapping
    @PreAuthorize("hasRole('ADMIN')")
-   public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
-      return ResponseEntity.ok(usuarioService.listarUsuarios());
+   public ResponseEntity<Page<UsuarioResponseDTO>> listarUsuarios(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(usuarioService.listarUsuarios(pagina, tamanio));
    }
 
    @GetMapping("/inactivos")
    @PreAuthorize("hasRole('ADMIN')")
-   public ResponseEntity<List<UsuarioResponseDTO>> listarInactivos() {
-      return ResponseEntity.ok(usuarioService.listarInactivos());
+   public ResponseEntity<Page<UsuarioResponseDTO>> listarInactivos(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(usuarioService.listarInactivos(pagina, tamanio));
    }
 
    @GetMapping("/todos")
    @PreAuthorize("hasRole('ADMIN')")
-   public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
-      return ResponseEntity.ok(usuarioService.listarTodos());
+   public ResponseEntity<Page<UsuarioResponseDTO>> listarTodos(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(usuarioService.listarTodos(pagina, tamanio));
    }
 
    /* GET /api/usuarios/{id} */

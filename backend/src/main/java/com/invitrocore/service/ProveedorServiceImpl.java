@@ -8,8 +8,10 @@ import com.invitrocore.model.Proveedor;
 import com.invitrocore.repository.ProveedorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Service
 public class ProveedorServiceImpl implements ProveedorService {
@@ -36,11 +38,10 @@ public class ProveedorServiceImpl implements ProveedorService {
    }
 
    @Override
-   public List<ProveedorResponseDTO> listar() {
-      return proveedorRepository.findAll()
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<ProveedorResponseDTO> listar(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return proveedorRepository.findAll(pageable)
+            .map(this::toDTO);
    }
 
    @Override

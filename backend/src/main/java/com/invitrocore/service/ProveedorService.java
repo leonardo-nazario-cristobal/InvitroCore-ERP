@@ -3,7 +3,7 @@ package com.invitrocore.service;
 import com.invitrocore.dto.ProveedorRequestDTO;
 import com.invitrocore.dto.ProveedorResponseDTO;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface ProveedorService {
 
@@ -11,7 +11,7 @@ public interface ProveedorService {
 
    ProveedorResponseDTO obtenerPorId(Long id);
 
-   List<ProveedorResponseDTO> listar();
+   Page<ProveedorResponseDTO> listar(int pagina, int tamanio);
 
    ProveedorResponseDTO actualizar(Long id, ProveedorRequestDTO dto);
 

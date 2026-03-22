@@ -2,6 +2,7 @@ package com.invitrocore.service;
 
 import com.invitrocore.dto.ProductoRequestDTO;
 import com.invitrocore.dto.ProductoResponseDTO;
+import org.springframework.data.domain.Page;
 import com.invitrocore.dto.ProductoStockBajoDTO;
 
 import java.util.List;
@@ -14,15 +15,15 @@ public interface ProductoService {
 
    ProductoResponseDTO obtenerPorCodigoBarras(String codigoBarras);
 
-   List<ProductoResponseDTO> listar();
+   Page<ProductoResponseDTO> listar(int pagina, int tamanio);
 
-   List<ProductoResponseDTO> listarInactivos();
+   Page<ProductoResponseDTO> listarInactivos(int pagina, int tamanio);
 
-   List<ProductoResponseDTO> listarTodos();
+   Page<ProductoResponseDTO> listarTodos(int pagina, int tamanio);
 
-   List<ProductoResponseDTO> listarPorCategoria(Long idCategoria);
+   Page<ProductoResponseDTO> listarPorCategoria(Long idCategoria, int pagina, int tamanio);
 
-   List<ProductoResponseDTO> buscarPorNombre(String nombre);
+   Page<ProductoResponseDTO> buscarPorNombre(String nombre, int pagina, int tamanio);
 
    List<ProductoStockBajoDTO> listarStockBajo();
 

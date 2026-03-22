@@ -2,6 +2,9 @@ package com.invitrocore.repository;
 
 import com.invitrocore.model.MovimientoInventario;
 import com.invitrocore.model.TipoMovimiento;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +16,7 @@ public interface MovimientoInventarioRepository extends JpaRepository<Movimiento
 
    List<MovimientoInventario> findByProductoIdOrderByCreadoEnDesc(Long idProducto);
 
-   List<MovimientoInventario> findByTipoOrderByCreadoEnDesc(TipoMovimiento tipo);
+   Page<MovimientoInventario> findByTipoOrderByCreadoEnDesc(TipoMovimiento tipo, Pageable pageable);
 
    List<MovimientoInventario> findByUsuarioIdOrderByCreadoEnDesc(Long idUsuario);
 

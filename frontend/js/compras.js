@@ -65,10 +65,10 @@ document.getElementById("btnNuevaCompra").addEventListener("click", abrirPanel);
 /* Cargar proveedores en el select */
 async function cargarProveedores() {
    try {
-      const res = await apiFetch("/api/proveedores");
-      const data = await res.json();
+      const res = await apiFetch("/api/proveedores?pagina=0&tamanio=100");
+      const page = await res.json();
       const select = document.getElementById("inputProveedor");
-      data.forEach((p) => {
+      page.content.forEach((p) => {
          select.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
       });
    } catch (error) {
@@ -79,8 +79,9 @@ async function cargarProveedores() {
 /* Cargar productos para los selects de detalles */
 async function cargarProductos() {
    try {
-      const res = await apiFetch("/api/productos");
-      productos = await res.json();
+      const res = await apiFetch("/api/productos?pagina=0&tamanio=500");
+      const page = await res.json();
+      productos = page.content;
    } catch (error) {
       console.error("Error cargando productos:", error);
    }
@@ -113,14 +114,14 @@ function agregarDetalle() {
                 placeholder="Cant." min="1" value="1" style="width: 80px;">
          <input type="number" class="form-control input-costo"
                 placeholder="Costo" min="0.01" step="0.01" style="width: 110px;">
-         <button type="button" class="btn-remove-detalle" onclick="this.closest('.detalle-row').remove(); actualizarTotal(); verificarDetalles();">✕</button>
+         <button type="button" class="btn-remove-detalle"
+                 onclick="this.closest('.detalle-row').remove(); actualizarTotal(); verificarDetalles();">✕</button>
       </div>
       <div class="subtotal-fila text-muted mt-1" style="font-size: 12px; text-align: right;">
          Subtotal: $0.00
       </div>
    `;
 
-   // Actualizar subtotal al cambiar cantidad o costo
    fila
       .querySelector(".input-cantidad")
       .addEventListener("input", () => actualizarSubtotal(fila));
@@ -161,24 +162,93 @@ function verificarDetalles() {
       filas.length === 0 ? "block" : "none";
 }
 
-/* Cargar compras */
-async function cargarCompras() {
+/* ── Paginación ──────────────────────────────── */
+const TAMANIO = 15;
+let callbackPaginaActual = null;
+
+function renderPaginacion(page, callbackPagina) {
+   callbackPaginaActual = callbackPagina;
+
+   let contenedor = document.getElementById("paginacion");
+   if (!contenedor) {
+      contenedor = document.createElement("div");
+      contenedor.id = "paginacion";
+      contenedor.className =
+         "d-flex justify-content-between align-items-center px-3 py-2 border-top";
+      document.querySelector(".table-card").appendChild(contenedor);
+   }
+
+   const { number, totalPages, totalElements, size } = page;
+   const desde = totalElements === 0 ? 0 : number * size + 1;
+   const hasta = Math.min((number + 1) * size, totalElements);
+
+   if (totalPages <= 1) {
+      contenedor.innerHTML = `
+         <span class="text-muted" style="font-size: 12px;">
+            ${totalElements} registros
+         </span>`;
+      return;
+   }
+
+   const rango = 2;
+   const inicio = Math.max(0, number - rango);
+   const fin = Math.min(totalPages - 1, number + rango);
+
+   let botonesPaginas = "";
+   if (inicio > 0)
+      botonesPaginas += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+   for (let i = inicio; i <= fin; i++) {
+      botonesPaginas += `
+         <li class="page-item ${i === number ? "active" : ""}">
+            <button class="page-link" onclick="irAPagina(${i})">${i + 1}</button>
+         </li>`;
+   }
+   if (fin < totalPages - 1)
+      botonesPaginas += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+
+   contenedor.innerHTML = `
+      <span class="text-muted" style="font-size: 12px;">
+         Mostrando ${desde}–${hasta} de ${totalElements}
+      </span>
+      <nav>
+         <ul class="pagination pagination-sm mb-0">
+            <li class="page-item ${number === 0 ? "disabled" : ""}">
+               <button class="page-link" onclick="irAPagina(${number - 1})">←</button>
+            </li>
+            ${botonesPaginas}
+            <li class="page-item ${number === totalPages - 1 ? "disabled" : ""}">
+               <button class="page-link" onclick="irAPagina(${number + 1})">→</button>
+            </li>
+         </ul>
+      </nav>
+   `;
+}
+
+function irAPagina(pagina) {
+   if (callbackPaginaActual) callbackPaginaActual(pagina);
+}
+
+/* Cargar compras con paginación */
+async function cargarCompras(pagina = 0) {
    try {
-      const res = await apiFetch("/api/compras");
-      const data = await res.json();
+      const res = await apiFetch(
+         `/api/compras?pagina=${pagina}&tamanio=${TAMANIO}`,
+      );
+      const page = await res.json();
 
       document.getElementById("totalCompras").textContent =
-         `${data.length} compras`;
+         `${page.totalElements} compras`;
 
       const tbody = document.getElementById("tablaCompras");
 
-      if (data.length === 0) {
+      if (page.content.length === 0) {
          tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">
             Sin compras registradas</td></tr>`;
+         renderPaginacion(page, cargarCompras);
          return;
       }
 
-      tbody.innerHTML = data
+      tbody.innerHTML = page.content
          .map(
             (c) => `
          <tr>
@@ -188,14 +258,14 @@ async function cargarCompras() {
             <td><strong>$${c.total.toLocaleString("es-MX")}</strong></td>
             <td>
                <button class="btn btn-outline-secondary btn-sm"
-                       onclick="verDetalles(${c.id})">
-                  Ver detalles
-               </button>
+                       onclick="verDetalles(${c.id})">Ver detalles</button>
             </td>
          </tr>
       `,
          )
          .join("");
+
+      renderPaginacion(page, cargarCompras);
    } catch (error) {
       console.error("Error cargando compras:", error);
    }
@@ -257,7 +327,6 @@ formCompra.addEventListener("submit", async function (e) {
       return;
    }
 
-   // Construir detalles
    const detalles = [];
    let valido = true;
 
@@ -295,13 +364,11 @@ formCompra.addEventListener("submit", async function (e) {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
+      if (!res.ok)
          throw new Error(data.message || "Error al registrar la compra");
-      }
 
       cerrarPanel();
-      cargarCompras();
+      cargarCompras(0);
    } catch (error) {
       alertaPanel.textContent = error.message;
       alertaPanel.classList.remove("d-none");
@@ -314,4 +381,4 @@ formCompra.addEventListener("submit", async function (e) {
 /* Iniciar */
 cargarProveedores();
 cargarProductos();
-cargarCompras();
+cargarCompras(0);

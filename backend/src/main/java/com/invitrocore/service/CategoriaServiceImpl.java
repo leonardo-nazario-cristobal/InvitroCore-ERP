@@ -8,8 +8,10 @@ import com.invitrocore.model.Categoria;
 import com.invitrocore.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
@@ -42,11 +44,10 @@ public class CategoriaServiceImpl implements CategoriaService {
    }
 
    @Override
-   public List<CategoriaResponseDTO> listar() {
-      return categoriaRepository.findAll()
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<CategoriaResponseDTO> listar(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return categoriaRepository.findAll(pageable)
+            .map(this::toDTO);
    }
 
    /* Actualizar */

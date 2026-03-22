@@ -65,8 +65,9 @@ document.getElementById("btnNuevaVenta").addEventListener("click", abrirPanel);
 /* Cargar productos */
 async function cargarProductos() {
    try {
-      const res = await apiFetch("/api/productos");
-      productos = await res.json();
+      const res = await apiFetch("/api/productos?pagina=0&tamanio=500");
+      const page = await res.json();
+      productos = page.content;
    } catch (error) {
       console.error("Error cargando productos:", error);
    }
@@ -107,7 +108,6 @@ function agregarDetalle() {
       </div>
    `;
 
-   // Autocompletar precio al seleccionar producto
    fila
       .querySelector(".select-producto")
       .addEventListener("change", function () {
@@ -157,36 +157,103 @@ function verificarDetalles() {
       filas.length === 0 ? "block" : "none";
 }
 
+/* ── Paginación ──────────────────────────────── */
+const TAMANIO = 15;
+let callbackPaginaActual = null;
+
+function renderPaginacion(page, callbackPagina) {
+   callbackPaginaActual = callbackPagina;
+
+   let contenedor = document.getElementById("paginacion");
+   if (!contenedor) {
+      contenedor = document.createElement("div");
+      contenedor.id = "paginacion";
+      contenedor.className =
+         "d-flex justify-content-between align-items-center px-3 py-2 border-top";
+      document.querySelector(".table-card").appendChild(contenedor);
+   }
+
+   const { number, totalPages, totalElements, size } = page;
+   const desde = totalElements === 0 ? 0 : number * size + 1;
+   const hasta = Math.min((number + 1) * size, totalElements);
+
+   if (totalPages <= 1) {
+      contenedor.innerHTML = `
+         <span class="text-muted" style="font-size: 12px;">
+            ${totalElements} registros
+         </span>`;
+      return;
+   }
+
+   const rango = 2;
+   const inicio = Math.max(0, number - rango);
+   const fin = Math.min(totalPages - 1, number + rango);
+
+   let botonesPaginas = "";
+   if (inicio > 0)
+      botonesPaginas += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+   for (let i = inicio; i <= fin; i++) {
+      botonesPaginas += `
+         <li class="page-item ${i === number ? "active" : ""}">
+            <button class="page-link" onclick="irAPagina(${i})">${i + 1}</button>
+         </li>`;
+   }
+   if (fin < totalPages - 1)
+      botonesPaginas += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+
+   contenedor.innerHTML = `
+      <span class="text-muted" style="font-size: 12px;">
+         Mostrando ${desde}–${hasta} de ${totalElements}
+      </span>
+      <nav>
+         <ul class="pagination pagination-sm mb-0">
+            <li class="page-item ${number === 0 ? "disabled" : ""}">
+               <button class="page-link" onclick="irAPagina(${number - 1})">←</button>
+            </li>
+            ${botonesPaginas}
+            <li class="page-item ${number === totalPages - 1 ? "disabled" : ""}">
+               <button class="page-link" onclick="irAPagina(${number + 1})">→</button>
+            </li>
+         </ul>
+      </nav>
+   `;
+}
+
+function irAPagina(pagina) {
+   if (callbackPaginaActual) callbackPaginaActual(pagina);
+}
+
 /* Filtro estado */
 document
    .getElementById("filtroEstado")
-   .addEventListener("change", cargarVentas);
+   .addEventListener("change", () => cargarVentas(0));
 
-/* Cargar ventas */
-async function cargarVentas() {
+/* Cargar ventas con paginación */
+async function cargarVentas(pagina = 0) {
    try {
       const filtro = document.getElementById("filtroEstado").value;
       const endpoint = filtro
-         ? `/api/ventas/estado?valor=${filtro}`
-         : "/api/ventas";
+         ? `/api/ventas/estado?valor=${filtro}&pagina=${pagina}&tamanio=${TAMANIO}`
+         : `/api/ventas?pagina=${pagina}&tamanio=${TAMANIO}`;
 
       const res = await apiFetch(endpoint);
-      const data = await res.json();
+      const page = await res.json();
 
       document.getElementById("totalVentas").textContent =
-         `${data.length} ventas`;
+         `${page.totalElements} ventas`;
 
       const tbody = document.getElementById("tablaVentas");
 
-      if (data.length === 0) {
+      if (page.content.length === 0) {
          tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">
             Sin ventas</td></tr>`;
+         renderPaginacion(page, cargarVentas);
          return;
       }
 
       const puedeCancel = ["admin", "ventas"].includes(rolUsuario);
 
-      tbody.innerHTML = data
+      tbody.innerHTML = page.content
          .map(
             (v) => `
          <tr>
@@ -198,16 +265,12 @@ async function cargarVentas() {
             <td><span class="badge-${v.estado}">${v.estado}</span></td>
             <td class="d-flex gap-1">
                <button class="btn btn-outline-secondary btn-sm"
-                       onclick="verDetalles(${v.id})">
-                  Ver
-               </button>
+                       onclick="verDetalles(${v.id})">Ver</button>
                ${
                   puedeCancel && v.estado !== "cancelada"
                      ? `
                   <button class="btn btn-outline-danger btn-sm"
-                          onclick="cancelarVenta(${v.id})">
-                     Cancelar
-                  </button>
+                          onclick="cancelarVenta(${v.id})">Cancelar</button>
                `
                      : ""
                }
@@ -216,6 +279,8 @@ async function cargarVentas() {
       `,
          )
          .join("");
+
+      renderPaginacion(page, cargarVentas);
    } catch (error) {
       console.error("Error cargando ventas:", error);
    }
@@ -273,7 +338,7 @@ async function cancelarVenta(id) {
          alert(data.message || "Error al cancelar la venta");
          return;
       }
-      cargarVentas();
+      cargarVentas(0);
    } catch (error) {
       console.error("Error cancelando venta:", error);
    }
@@ -327,13 +392,11 @@ formVenta.addEventListener("submit", async function (e) {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
+      if (!res.ok)
          throw new Error(data.message || "Error al registrar la venta");
-      }
 
       cerrarPanel();
-      cargarVentas();
+      cargarVentas(0);
    } catch (error) {
       alertaPanel.textContent = error.message;
       alertaPanel.classList.remove("d-none");
@@ -345,4 +408,4 @@ formVenta.addEventListener("submit", async function (e) {
 
 /* Iniciar */
 cargarProductos();
-cargarVentas();
+cargarVentas(0);

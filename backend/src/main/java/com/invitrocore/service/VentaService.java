@@ -7,17 +7,19 @@ import com.invitrocore.model.EstadoVenta;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 public interface VentaService {
 
    VentaResponseDTO registrar(VentaRequestDTO dto, String correoUsuario);
 
    VentaResponseDTO obtenerPorId(Long id);
 
-   List<VentaResponseDTO> listar();
+   Page<VentaResponseDTO> listar(int pagina, int tamanio);
 
    List<VentaResponseDTO> listarPorUsuario(Long idUsuario);
 
-   List<VentaResponseDTO> listarPorEstado(EstadoVenta estado);
+   Page<VentaResponseDTO> listarPorEstado(EstadoVenta estado, int pagina, int tamanio);
 
    List<VentaResponseDTO> listarPorRangoFecha(OffsetDateTime desde, OffsetDateTime hasta);
 

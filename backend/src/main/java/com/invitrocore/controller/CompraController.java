@@ -4,6 +4,8 @@ import com.invitrocore.dto.CompraRequestDTO;
 import com.invitrocore.dto.CompraResponseDTO;
 import com.invitrocore.service.CompraService;
 import jakarta.validation.Valid;
+
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +41,10 @@ public class CompraController {
 
    @GetMapping
    @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
-   public ResponseEntity<List<CompraResponseDTO>> listar() {
-      return ResponseEntity.ok(compraService.listar());
+   public ResponseEntity<Page<CompraResponseDTO>> listar(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(compraService.listar(pagina, tamanio));
    }
 
    /* GET /api/compras{id} */

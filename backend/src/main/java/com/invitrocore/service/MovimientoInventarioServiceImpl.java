@@ -11,6 +11,11 @@ import com.invitrocore.model.Usuario;
 import com.invitrocore.repository.MovimientoInventarioRepository;
 import com.invitrocore.repository.ProductoRepository;
 import com.invitrocore.repository.UsuarioRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,11 +72,9 @@ public class MovimientoInventarioServiceImpl implements MovimientoInventarioServ
    }
 
    @Override
-   public List<MovimientoInventarioResponseDTO> listar() {
-      return movimientoRepository.findAllWithDetails()
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<MovimientoInventarioResponseDTO> listar(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("creadoEn").descending());
+      return movimientoRepository.findAll(pageable).map(this::toDTO);
    }
 
    @Override
@@ -84,11 +87,9 @@ public class MovimientoInventarioServiceImpl implements MovimientoInventarioServ
    }
 
    @Override
-   public List<MovimientoInventarioResponseDTO> listarPorTipo(TipoMovimiento tipo) {
-      return movimientoRepository.findByTipoOrderByCreadoEnDesc(tipo)
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<MovimientoInventarioResponseDTO> listarPorTipo(TipoMovimiento tipo, int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("creadoEn").descending());
+      return movimientoRepository.findByTipoOrderByCreadoEnDesc(tipo, pageable).map(this::toDTO);
    }
 
    @Override

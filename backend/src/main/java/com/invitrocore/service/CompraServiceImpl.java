@@ -18,6 +18,11 @@ import com.invitrocore.model.MovimientoInventario;
 import com.invitrocore.model.TipoMovimiento;
 import com.invitrocore.model.Usuario;
 import com.invitrocore.repository.MovimientoInventarioRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,11 +103,10 @@ public class CompraServiceImpl implements CompraService {
    }
 
    @Override
-   public List<CompraResponseDTO> listar() {
-      return compraRepository.findAll()
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<CompraResponseDTO> listar(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("fecha").ascending());
+      return compraRepository.findAll(pageable)
+            .map(this::toDTO);
    }
 
    @Override

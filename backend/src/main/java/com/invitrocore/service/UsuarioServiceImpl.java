@@ -7,11 +7,13 @@ import com.invitrocore.exception.ResourceNotFoundException;
 import com.invitrocore.model.TipoRol;
 import com.invitrocore.model.Usuario;
 import com.invitrocore.repository.UsuarioRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -56,28 +58,25 @@ public class UsuarioServiceImpl implements UsuarioService {
    }
 
    @Override
-   public List<UsuarioResponseDTO> listarUsuarios() {
-      return usuarioRepository.findByActivoTrue()
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<UsuarioResponseDTO> listarUsuarios(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return usuarioRepository.findByActivoTrue(pageable)
+            .map(this::toDTO);
    }
 
    @Override
-   public List<UsuarioResponseDTO> listarInactivos() {
-      return usuarioRepository.findAll()
-            .stream()
-            .filter(u -> !u.isActivo())
-            .map(this::toDTO)
-            .toList();
+   public Page<UsuarioResponseDTO> listarInactivos(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return usuarioRepository.findAll(pageable)
+            .map(u -> u.isActivo() ? null : toDTO(u))
+            .map(u -> u);
    }
 
    @Override
-   public List<UsuarioResponseDTO> listarTodos() {
-      return usuarioRepository.findAll()
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<UsuarioResponseDTO> listarTodos(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return usuarioRepository.findAll(pageable)
+            .map(this::toDTO);
    }
 
    /* Actualizar */

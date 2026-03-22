@@ -8,8 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api/proveedores")
@@ -30,8 +29,10 @@ public class ProveedorController {
 
    @GetMapping
    @PreAuthorize("isAuthenticated()")
-   public ResponseEntity<List<ProveedorResponseDTO>> listar() {
-      return ResponseEntity.ok(proveedorService.listar());
+   public ResponseEntity<Page<ProveedorResponseDTO>> listar(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(proveedorService.listar(pagina, tamanio));
    }
 
    @GetMapping("/{id}")

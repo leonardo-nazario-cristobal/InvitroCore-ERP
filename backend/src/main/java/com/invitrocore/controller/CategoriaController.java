@@ -8,8 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api/categorias")
@@ -35,8 +34,10 @@ public class CategoriaController {
 
    @GetMapping
    @PreAuthorize("isAuthenticated()")
-   public ResponseEntity<List<CategoriaResponseDTO>> listar() {
-      return ResponseEntity.ok(categoriaService.listar());
+   public ResponseEntity<Page<CategoriaResponseDTO>> listar(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(categoriaService.listar(pagina, tamanio));
    }
 
    /* GET /api/categorias/{id} */

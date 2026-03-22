@@ -7,6 +7,11 @@ import com.invitrocore.exception.BadRequestException;
 import com.invitrocore.exception.ResourceNotFoundException;
 import com.invitrocore.model.Categoria;
 import com.invitrocore.model.Producto;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import com.invitrocore.repository.CategoriaRepository;
 import com.invitrocore.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
@@ -72,44 +77,38 @@ public class ProductoServiceImpl implements ProductoService {
    }
 
    @Override
-   public List<ProductoResponseDTO> listar() {
-      return productoRepository.findByActivoTrue()
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<ProductoResponseDTO> listar(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return productoRepository.findByActivoTrue(pageable)
+            .map(this::toDTO);
    }
 
    @Override
-   public List<ProductoResponseDTO> listarInactivos() {
-      return productoRepository.findAll()
-            .stream()
-            .filter(p -> !p.isActivo())
-            .map(this::toDTO)
-            .toList();
+   public Page<ProductoResponseDTO> listarInactivos(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return productoRepository.findAll(pageable)
+            .map(this::toDTO);
    }
 
    @Override
-   public List<ProductoResponseDTO> listarTodos() {
-      return productoRepository.findAll()
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<ProductoResponseDTO> listarTodos(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return productoRepository.findAll(pageable)
+            .map(this::toDTO);
    }
 
    @Override
-   public List<ProductoResponseDTO> listarPorCategoria(Long idCategoria) {
-      return productoRepository.findByActivoTrueAndCategoriaId(idCategoria)
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<ProductoResponseDTO> listarPorCategoria(Long idCategoria, int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return productoRepository.findByActivoTrueAndCategoriaId(idCategoria, pageable)
+            .map(this::toDTO);
    }
 
    @Override
-   public List<ProductoResponseDTO> buscarPorNombre(String nombre) {
-      return productoRepository.findByActivoTrueAndNombreContainingIgnoreCase(nombre)
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<ProductoResponseDTO> buscarPorNombre(String nombre, int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("nombre").ascending());
+      return productoRepository.findByActivoTrueAndNombreContainingIgnoreCase(nombre, pageable)
+            .map(this::toDTO);
    }
 
    @Override

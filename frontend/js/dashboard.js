@@ -1,10 +1,8 @@
 /* Datos del usuario desde localStorage */
-
 const nombre = localStorage.getItem("nombre") || "Usuario";
 const rol = localStorage.getItem("rol") || "";
 
 /* Permisos del menú */
-
 function aplicarPermisosMenu() {
    const menuPermisos = {
       "menu-usuarios": ["admin"],
@@ -26,11 +24,8 @@ function aplicarPermisosMenu() {
 aplicarPermisosMenu();
 
 /* Perfil en el sidebar */
-
 document.getElementById("footerNombre").textContent = nombre;
 document.getElementById("footerRol").textContent = rol;
-
-/* Iniciales del avatar */
 
 const iniciales = nombre
    .split(" ")
@@ -41,11 +36,9 @@ const iniciales = nombre
 document.getElementById("avatarInicial").textContent = iniciales;
 
 /* Bienvenida en el topbar */
-
 document.getElementById("bienvenida").textContent = `Bienvenido, ${nombre}`;
 
 /* Modal de bienvenida solo para admin */
-
 if (rol === "admin" && !sessionStorage.getItem("modalMostrado")) {
    sessionStorage.setItem("modalMostrado", "true");
    document.getElementById("modalBienvenidaNombre").textContent = nombre;
@@ -56,7 +49,6 @@ if (rol === "admin" && !sessionStorage.getItem("modalMostrado")) {
 }
 
 /* Logout */
-
 document.getElementById("btnLogout").addEventListener("click", async () => {
    const refreshToken = localStorage.getItem("refreshToken");
    try {
@@ -71,44 +63,46 @@ document.getElementById("btnLogout").addEventListener("click", async () => {
 });
 
 /* Cargar datos del dashboard */
-
 async function cargarDashboard() {
    try {
       const puedeVerStockBajo = ["admin", "compras"].includes(rol);
 
       const promesas = [
-         apiFetch("/api/productos").then((r) => r.json()),
-         apiFetch("/api/proveedores").then((r) => r.json()),
+         apiFetch("/api/productos?pagina=0&tamanio=1").then((r) => r.json()),
+         apiFetch("/api/proveedores?pagina=0&tamanio=1").then((r) => r.json()),
          puedeVerStockBajo
             ? apiFetch("/api/productos/stock-bajo").then((r) => r.json())
             : Promise.resolve([]),
-         apiFetch("/api/ventas").then((r) => r.json()),
+         apiFetch("/api/ventas?pagina=0&tamanio=25").then((r) => r.json()),
+         apiFetch("/api/compras?pagina=0&tamanio=25").then((r) => r.json()),
       ];
 
-      const [productos, proveedores, stockBajo, ventas] =
-         await Promise.all(promesas);
+      const [
+         productosPage,
+         proveedoresPage,
+         stockBajo,
+         ventasPage,
+         comprasPage,
+      ] = await Promise.all(promesas);
 
       /* Ocultar tabla stock bajo si no tiene permiso */
-
       if (!puedeVerStockBajo) {
          document.querySelector(".table-card").style.display = "none";
       }
 
-      /* Productos activos */
-
-      document.getElementById("totalProductos").textContent = productos.length;
+      /* Productos activos — usar totalElements del Page */
+      document.getElementById("totalProductos").textContent =
+         productosPage.totalElements;
       document.getElementById("stockBajoSub").textContent =
          `${Array.isArray(stockBajo) ? stockBajo.length : 0} con stock bajo`;
 
-      /* Proveedores */
-
+      /* Proveedores — usar totalElements del Page */
       document.getElementById("totalProveedores").textContent =
-         proveedores.length;
+         proveedoresPage.totalElements;
 
-      /* Ventas de hoy */
-
+      /* Ventas de hoy — filtrar sobre content */
       const hoy = new Date().toISOString().split("T")[0];
-      const ventasHoy = ventas.filter(
+      const ventasHoy = ventasPage.content.filter(
          (v) => v.fecha.startsWith(hoy) && v.estado === "completada",
       );
       const totalHoy = ventasHoy.reduce((sum, v) => sum + v.total, 0);
@@ -117,18 +111,13 @@ async function cargarDashboard() {
       document.getElementById("ventasHoySub").textContent =
          `${ventasHoy.length} transacciones`;
 
-      /* Compras del mes */
-
-      const mesActual = new Date().toISOString().substring(0, 7);
-      const comprasMes = ventas.filter((v) => v.fecha.startsWith(mesActual));
-      const totalCompras = comprasMes.reduce((sum, c) => sum + c.total, 0);
+      /* Compras del mes — usar totalElements del Page */
       document.getElementById("comprasMes").textContent =
-         `$${totalCompras.toLocaleString("es-MX")}`;
+         `$${comprasPage.content.reduce((sum, c) => sum + c.total, 0).toLocaleString("es-MX")}`;
       document.getElementById("comprasMesSub").textContent =
-         `${comprasMes.length} órdenes`;
+         `${comprasPage.totalElements} órdenes`;
 
       /* Tabla stock bajo */
-
       if (puedeVerStockBajo) {
          const tbody = document.getElementById("tablaStockBajo");
          document.getElementById("badgeStockBajo").textContent =

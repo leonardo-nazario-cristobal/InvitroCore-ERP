@@ -2,8 +2,7 @@ package com.invitrocore.service;
 
 import com.invitrocore.dto.CategoriaRequestDTO;
 import com.invitrocore.dto.CategoriaResponseDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface CategoriaService {
 
@@ -11,7 +10,7 @@ public interface CategoriaService {
 
    CategoriaResponseDTO obtenerPorId(Long id);
 
-   List<CategoriaResponseDTO> listar();
+   Page<CategoriaResponseDTO> listar(int pagina, int tamanio);
 
    CategoriaResponseDTO actualizar(Long id, CategoriaRequestDTO dto);
 

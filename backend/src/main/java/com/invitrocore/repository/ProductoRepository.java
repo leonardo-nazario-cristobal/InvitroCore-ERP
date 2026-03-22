@@ -1,6 +1,8 @@
 package com.invitrocore.repository;
 
 import com.invitrocore.model.Producto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,12 +17,12 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
    Optional<Producto> findByCodigoBarras(String codigoBarras);
 
-   List<Producto> findByActivoTrue();
+   Page<Producto> findByActivoTrue(Pageable pageable);
 
-   List<Producto> findByActivoTrueAndCategoriaId(Long idCategoria);
+   Page<Producto> findByActivoTrueAndCategoriaId(Long idCategoria, Pageable pageable);
 
    @Query("SELECT p FROM Producto p WHERE p.activo = true AND p.stock <= p.stockMinimo")
    List<Producto> findProductosConStockBajo();
 
-   List<Producto> findByActivoTrueAndNombreContainingIgnoreCase(String nombre);
+   Page<Producto> findByActivoTrueAndNombreContainingIgnoreCase(String nombre, Pageable pageable);
 }

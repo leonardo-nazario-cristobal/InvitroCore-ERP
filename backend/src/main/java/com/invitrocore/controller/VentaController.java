@@ -5,6 +5,8 @@ import com.invitrocore.dto.VentaResponseDTO;
 import com.invitrocore.model.EstadoVenta;
 import com.invitrocore.service.VentaService;
 import jakarta.validation.Valid;
+
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +42,10 @@ public class VentaController {
 
    @GetMapping
    @PreAuthorize("hasAnyRole('ADMIN', 'VENTAS')")
-   public ResponseEntity<List<VentaResponseDTO>> listar() {
-      return ResponseEntity.ok(ventaService.listar());
+   public ResponseEntity<Page<VentaResponseDTO>> listar(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(ventaService.listar(pagina, tamanio));
    }
 
    /* GET /api/ventas/{id} */
@@ -65,9 +69,11 @@ public class VentaController {
 
    @GetMapping("/estado")
    @PreAuthorize("hasAnyRole('ADMIN', 'VENTAS')")
-   public ResponseEntity<List<VentaResponseDTO>> listarPorEstado(
-         @RequestParam EstadoVenta valor) {
-      return ResponseEntity.ok(ventaService.listarPorEstado(valor));
+   public ResponseEntity<Page<VentaResponseDTO>> listarPorEstado(
+         @RequestParam EstadoVenta valor,
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(ventaService.listarPorEstado(valor, pagina, tamanio));
    }
 
    /* GET /api/ventas/reporte?desde= &hasta= */

@@ -1,8 +1,28 @@
 const BASE_URL = "http://localhost:8080";
 
-if (localStorage.getItem("accessToken")) {
-   window.location.href = "dashboard.html";
+/* Verificar si el token existente es válido antes de redirigir */
+async function verificarTokenYRedirigir() {
+   const token = localStorage.getItem("accessToken");
+   if (!token) return;
+
+   try {
+      const res = await fetch(`${BASE_URL}/api/productos?pagina=0&tamanio=1`, {
+         headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+         // Token válido → ir al dashboard
+         window.location.href = "dashboard.html";
+      } else {
+         // Token inválido o expirado → limpiar y quedarse en login
+         localStorage.clear();
+      }
+   } catch (error) {
+      localStorage.clear();
+   }
 }
+
+verificarTokenYRedirigir();
 
 document.getElementById("verPassword").addEventListener("change", function () {
    const input = document.getElementById("password");
@@ -19,7 +39,6 @@ document
       const alerta = document.getElementById("alerta");
       const btn = document.getElementById("btnLogin");
 
-      // Deshabilitar botón mientras carga
       btn.disabled = true;
       btn.textContent = "Iniciando sesión...";
       alerta.classList.add("d-none");
@@ -37,7 +56,6 @@ document
             throw new Error(data.message || "Correo o contraseña incorrectos");
          }
 
-         // Guardar tokens y redirigir al dashboard
          localStorage.setItem("accessToken", data.accessToken);
          localStorage.setItem("refreshToken", data.refreshToken);
          localStorage.setItem("nombre", data.nombre);

@@ -60,10 +60,10 @@ document
 /* Cargar productos en el select */
 async function cargarProductos() {
    try {
-      const res = await apiFetch("/api/productos");
-      const data = await res.json();
+      const res = await apiFetch("/api/productos?pagina=0&tamanio=500");
+      const page = await res.json();
       const select = document.getElementById("inputProducto");
-      data.forEach((p) => {
+      page.content.forEach((p) => {
          select.innerHTML += `<option value="${p.id}">${p.nombre} (stock: ${p.stock})</option>`;
       });
    } catch (error) {
@@ -71,34 +71,101 @@ async function cargarProductos() {
    }
 }
 
+/* ── Paginación ──────────────────────────────── */
+const TAMANIO = 25;
+let callbackPaginaActual = null;
+
+function renderPaginacion(page, callbackPagina) {
+   callbackPaginaActual = callbackPagina;
+
+   let contenedor = document.getElementById("paginacion");
+   if (!contenedor) {
+      contenedor = document.createElement("div");
+      contenedor.id = "paginacion";
+      contenedor.className =
+         "d-flex justify-content-between align-items-center px-3 py-2 border-top";
+      document.querySelector(".table-card").appendChild(contenedor);
+   }
+
+   const { number, totalPages, totalElements, size } = page;
+   const desde = totalElements === 0 ? 0 : number * size + 1;
+   const hasta = Math.min((number + 1) * size, totalElements);
+
+   if (totalPages <= 1) {
+      contenedor.innerHTML = `
+         <span class="text-muted" style="font-size: 12px;">
+            ${totalElements} registros
+         </span>`;
+      return;
+   }
+
+   const rango = 2;
+   const inicio = Math.max(0, number - rango);
+   const fin = Math.min(totalPages - 1, number + rango);
+
+   let botonesPaginas = "";
+   if (inicio > 0)
+      botonesPaginas += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+   for (let i = inicio; i <= fin; i++) {
+      botonesPaginas += `
+         <li class="page-item ${i === number ? "active" : ""}">
+            <button class="page-link" onclick="irAPagina(${i})">${i + 1}</button>
+         </li>`;
+   }
+   if (fin < totalPages - 1)
+      botonesPaginas += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+
+   contenedor.innerHTML = `
+      <span class="text-muted" style="font-size: 12px;">
+         Mostrando ${desde}–${hasta} de ${totalElements}
+      </span>
+      <nav>
+         <ul class="pagination pagination-sm mb-0">
+            <li class="page-item ${number === 0 ? "disabled" : ""}">
+               <button class="page-link" onclick="irAPagina(${number - 1})">←</button>
+            </li>
+            ${botonesPaginas}
+            <li class="page-item ${number === totalPages - 1 ? "disabled" : ""}">
+               <button class="page-link" onclick="irAPagina(${number + 1})">→</button>
+            </li>
+         </ul>
+      </nav>
+   `;
+}
+
+function irAPagina(pagina) {
+   if (callbackPaginaActual) callbackPaginaActual(pagina);
+}
+
 /* Filtro por tipo */
 document
    .getElementById("filtroTipo")
-   .addEventListener("change", cargarMovimientos);
+   .addEventListener("change", () => cargarMovimientos(0));
 
-/* Cargar movimientos */
-async function cargarMovimientos() {
+/* Cargar movimientos con paginación */
+async function cargarMovimientos(pagina = 0) {
    try {
       const filtro = document.getElementById("filtroTipo").value;
       const endpoint = filtro
-         ? `/api/movimientos/tipo?valor=${filtro}`
-         : "/api/movimientos";
+         ? `/api/movimientos/tipo?valor=${filtro}&pagina=${pagina}&tamanio=${TAMANIO}`
+         : `/api/movimientos?pagina=${pagina}&tamanio=${TAMANIO}`;
 
       const res = await apiFetch(endpoint);
-      const data = await res.json();
+      const page = await res.json();
 
       document.getElementById("totalMovimientos").textContent =
-         `${data.length} movimientos`;
+         `${page.totalElements} movimientos`;
 
       const tbody = document.getElementById("tablaMovimientos");
 
-      if (data.length === 0) {
+      if (page.content.length === 0) {
          tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">
             Sin movimientos</td></tr>`;
+         renderPaginacion(page, cargarMovimientos);
          return;
       }
 
-      tbody.innerHTML = data
+      tbody.innerHTML = page.content
          .map(
             (m) => `
          <tr>
@@ -116,6 +183,8 @@ async function cargarMovimientos() {
       `,
          )
          .join("");
+
+      renderPaginacion(page, cargarMovimientos);
    } catch (error) {
       console.error("Error cargando movimientos:", error);
    }
@@ -147,13 +216,11 @@ formMovimiento.addEventListener("submit", async function (e) {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
+      if (!res.ok)
          throw new Error(data.message || "Error al registrar el movimiento");
-      }
 
       cerrarPanel();
-      cargarMovimientos();
+      cargarMovimientos(0);
    } catch (error) {
       alertaPanel.textContent = error.message;
       alertaPanel.classList.remove("d-none");
@@ -165,4 +232,4 @@ formMovimiento.addEventListener("submit", async function (e) {
 
 /* Iniciar */
 cargarProductos();
-cargarMovimientos();
+cargarMovimientos(0);

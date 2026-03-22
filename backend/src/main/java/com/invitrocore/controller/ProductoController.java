@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,20 +36,26 @@ public class ProductoController {
 
    @GetMapping
    @PreAuthorize("isAuthenticated()")
-   public ResponseEntity<List<ProductoResponseDTO>> listar() {
-      return ResponseEntity.ok(productoService.listar());
+   public ResponseEntity<Page<ProductoResponseDTO>> listar(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "25") int tamanio) {
+      return ResponseEntity.ok(productoService.listar(pagina, tamanio));
    }
 
    @GetMapping("/inactivos")
    @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
-   public ResponseEntity<List<ProductoResponseDTO>> listarInactivos() {
-      return ResponseEntity.ok(productoService.listarInactivos());
+   public ResponseEntity<Page<ProductoResponseDTO>> listarInactivos(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(productoService.listarInactivos(pagina, tamanio));
    }
 
    @GetMapping("/todos")
    @PreAuthorize("hasAnyRole('ADMIN', 'COMPRAS')")
-   public ResponseEntity<List<ProductoResponseDTO>> listarTodos() {
-      return ResponseEntity.ok(productoService.listarTodos());
+   public ResponseEntity<Page<ProductoResponseDTO>> listarTodos(
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "25") int tamanio) {
+      return ResponseEntity.ok(productoService.listarTodos(pagina, tamanio));
    }
 
    /* GET /api/productos/{id} */
@@ -72,18 +79,22 @@ public class ProductoController {
 
    @GetMapping("/categoria/{idCategoria}")
    @PreAuthorize("isAuthenticated()")
-   public ResponseEntity<List<ProductoResponseDTO>> listarPorCategoria(
-         @PathVariable Long idCategoria) {
-      return ResponseEntity.ok(productoService.listarPorCategoria(idCategoria));
+   public ResponseEntity<Page<ProductoResponseDTO>> listarPorCategoria(
+         @PathVariable Long idCategoria,
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(productoService.listarPorCategoria(idCategoria, pagina, tamanio));
    }
 
    /* GET /api/productos/buscar?nombre=laptp */
 
    @GetMapping("/buscar")
    @PreAuthorize("isAuthenticated()")
-   public ResponseEntity<List<ProductoResponseDTO>> buscarPorNombre(
-         @RequestParam String nombre) {
-      return ResponseEntity.ok(productoService.buscarPorNombre(nombre));
+   public ResponseEntity<Page<ProductoResponseDTO>> buscarPorNombre(
+         @RequestParam String nombre,
+         @RequestParam(defaultValue = "0") int pagina,
+         @RequestParam(defaultValue = "15") int tamanio) {
+      return ResponseEntity.ok(productoService.buscarPorNombre(nombre, pagina, tamanio));
    }
 
    /* GET /api/productos/stock-bajo */

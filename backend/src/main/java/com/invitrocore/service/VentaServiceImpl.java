@@ -11,6 +11,11 @@ import com.invitrocore.repository.ProductoRepository;
 import com.invitrocore.repository.MovimientoInventarioRepository;
 import com.invitrocore.repository.UsuarioRepository;
 import com.invitrocore.repository.VentaRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,11 +89,10 @@ public class VentaServiceImpl implements VentaService {
    }
 
    @Override
-   public List<VentaResponseDTO> listar() {
-      return ventaRepository.findAll()
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<VentaResponseDTO> listar(int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("fecha").ascending());
+      return ventaRepository.findAll(pageable)
+            .map(this::toDTO);
    }
 
    @Override
@@ -104,11 +108,9 @@ public class VentaServiceImpl implements VentaService {
    }
 
    @Override
-   public List<VentaResponseDTO> listarPorEstado(EstadoVenta estado) {
-      return ventaRepository.findByEstado(estado)
-            .stream()
-            .map(this::toDTO)
-            .toList();
+   public Page<VentaResponseDTO> listarPorEstado(EstadoVenta estado, int pagina, int tamanio) {
+      Pageable pageable = PageRequest.of(pagina, tamanio, Sort.by("fecha").descending());
+      return ventaRepository.findByEstado(estado, pageable).map(this::toDTO);
    }
 
    @Override

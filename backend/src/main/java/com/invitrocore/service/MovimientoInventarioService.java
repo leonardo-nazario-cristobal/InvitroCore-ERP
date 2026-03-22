@@ -7,6 +7,8 @@ import com.invitrocore.model.TipoMovimiento;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 public interface MovimientoInventarioService {
 
    MovimientoInventarioResponseDTO registrar(MovimientoInventarioRequestDTO dto,
@@ -14,11 +16,11 @@ public interface MovimientoInventarioService {
 
    MovimientoInventarioResponseDTO obtenerPorId(Long id);
 
-   List<MovimientoInventarioResponseDTO> listar();
+   Page<MovimientoInventarioResponseDTO> listar(int pagina, int tamanio);
 
    List<MovimientoInventarioResponseDTO> listarPorProducto(Long idProducto);
 
-   List<MovimientoInventarioResponseDTO> listarPorTipo(TipoMovimiento tipo);
+   Page<MovimientoInventarioResponseDTO> listarPorTipo(TipoMovimiento tipo, int pagina, int tamanio);
 
    List<MovimientoInventarioResponseDTO> listarPorUsuario(Long idUsuario);
 
